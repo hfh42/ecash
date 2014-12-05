@@ -32,7 +32,9 @@ public class Bank {
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		return Util.modPow(gu,w);
+		int hu = Util.modPow(gu,w);
+		assert Util.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
+		return hu;
 	}
 	
 
@@ -44,7 +46,9 @@ public class Bank {
 		
 		int v = Util.getRandomExp();
 		int Hbar = Util.modPow(G, v);
+		assert Util.isInGroup(Hbar);
 		int hbar = Util.modPow(gu, v);
+		assert Util.isInGroup(hbar);
 		
 		withdrawSession.put(gu,v);
 		
@@ -56,6 +60,8 @@ public class Bank {
 		
 		int v = withdrawSession.remove(gu);		
 		int z = Util.addE(Util.multE(e, w), v);
+		assert z < Parameters.q && z > 0;
+		
 		return z;
 	}
 	
