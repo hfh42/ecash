@@ -26,7 +26,7 @@ public class User {
 		int v2 = Util.getRandom();
 		int zp = Util.getRandom();
 		int ep = Util.getRandom();
-		
+
 		// Create coin and save it
 		int x = Util.modPow(gu, s);
 		int a = Util.modMult(Util.modPow(Parameters.g1, v1), Util.modPow(Parameters.g2,v2));
@@ -39,7 +39,10 @@ public class User {
 		
 		// Get commitment from Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
-		int Hbarp = Util.modMult(Util.modPow(bank.getG(), zp),Util.modInverse(Util.modPow(bank.getH(), ep)));
+		int gzp = Util.modPow(bank.getG(), zp);
+		int hep = Util.modPow(bank.getH(), ep);
+		int hnegep = Util.modInverse(hep);
+		int Hbarp = Util.modMult(gzp,hnegep);
 		int hbarp = Util.modMult(Util.modPow(gus, zp),Util.modInverse(Util.modPow(hus, ep)));
 		int HbarHbarp = Util.modMult(pairHbarhbar.x1, Hbarp);
 		int hbarshbarp = Util.modMult(Util.modPow(pairHbarhbar.x2,s), hbarp);
@@ -54,7 +57,8 @@ public class User {
 		list.add(hbarshbarp);
 		list.add(a);
 		
-		int e = Util.modAdd(Util.hash(list),-ep);
+		int hash = Util.hash(list);
+		int e = Util.modAdd(hash,-ep);
 		
 		// Get response from Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);

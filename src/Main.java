@@ -12,9 +12,9 @@ public class Main {
 		User u3 = new User(123456789, b);
 
 		// Create a few shops
-		Shop s1 = new Shop(242424, b);
-		Shop s2 = new Shop(7331, b);
-		Shop s3 = new Shop(987654321, b);
+		Shop s1 = new Shop(22, b);
+		Shop s2 = new Shop(37, b);
+		Shop s3 = new Shop(42, b);
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
@@ -45,7 +45,15 @@ public class Main {
 			System.out.println("Contacted shop with an invalid transaction ID");
 		} catch(NoCoinException e) {
 			System.out.println("Tried to spend a coin with no coins withdrawn");
+		} catch(DoubleDepositException e) {
+			System.out.println("Tried to deposit the same transaction twice");
+		} catch(DoubleSpendingException e) {
+			System.out.println("Tried to spend the same coin twice");
 		}
+	}
+
+	private static void createAndShowGUI() {
+		
 	}
 
 	private static void testHash() {

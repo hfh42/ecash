@@ -23,14 +23,19 @@ public class Shop {
 	public void buy(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
 		if(!isValidPid(pid)) throw new InvalidPidException();
 		
-		if(!Util.BKVer(bank.getG(), bank.getH(), c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
+		boolean b1 = !Util.BKVer(bank.getG(), bank.getH(), c, sigmaB);
+		boolean b2 = !Util.OTVer(c, pid, sigma);
+		if(b1 || b2) {
+			System.out.println("b1: " + b1 + ", b2: " + b2);
+			throw new InvalidCoinException();
+		}
 		
 		bank.deposit(c,sigmaB,sigma,pid, this);
 	}
 	
 	private boolean isValidPid(int pid){
 		int id = pid - shopid;
-		return (0 > id || id > 100000);
+		return !(0 > id || id > 100000);
 	}
 	
 }

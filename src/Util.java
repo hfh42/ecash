@@ -8,9 +8,10 @@ import java.lang.IllegalArgumentException;
 import java.nio.ByteBuffer;
 
 public class Util {
+
+	private static Random rnd = new Random(System.currentTimeMillis());
 	
 	public static int getRandom(){
-		Random rnd = new Random(System.currentTimeMillis());
 		return rnd.nextInt(Parameters.q);
 	}
 	
@@ -37,31 +38,44 @@ public class Util {
 	 */
 	
 	public static int modPow(int base, int exp){
-		int x = 1, y = base;
+		long x = 1, y = base;
 		
 		while(exp > 0){
-			if ( exp % 2 == 1){
-				x = x*y;
-				if(x > Parameters.q) x %= Parameters.q;
+			if ( mod(exp,2) == 1){
+				x = mod((x*y),Parameters.q);
 			}
-			y = y*y;
-			if(y > Parameters.q) y %= Parameters.q;
+			y = mod((y*y),Parameters.q);
 			exp /= 2;
 		}
-		
-		return x;
+
+		int result = mod(x,Parameters.q);
+		return result;
+		//BigInteger b = BigInteger.valueOf(base);
+		//BigInteger e = BigInteger.valueOf(exp);
+
+		//return b.modPow(e, BigInteger.valueOf(Parameters.q)).intValue();
 	}
 	
 	public static int modInverse(int base){
+		//return modPow(base, -1);
 		return modPow(base, Parameters.q-2);
 	}
 		
 	public static int modMult(int x, int y){
-		return (x*y) % Parameters.q;
+		long a = x, b = y;
+		return (mod((a*b),Parameters.q));
 	}
 		
 	public static int modAdd(int x, int y){
-		return (x+y) % Parameters.q;
+		long a = x, b = y;
+		return (mod((a+b),Parameters.q));
+	}
+
+	public static int mod(long base, int mod) {
+		int r = (int)(base % mod);
+		if(r < 0)
+			r += Math.abs(mod);
+		return r;
 	}
 	
 	
