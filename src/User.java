@@ -66,7 +66,7 @@ public class User {
 		coins.add(c);
 	}
 	
-	public void spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException{
+	public void spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
 		int pid = shop.getpid();
 		Coin c = coins.removeFirst();
 		Pair sigma = Util.OTSign(c.sk, pid);

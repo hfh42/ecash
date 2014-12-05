@@ -11,7 +11,8 @@ public class Bank {
 	
 	private Map<Integer,Integer> withdrawSession = new HashMap<Integer,Integer>();
 	
-	
+	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
+	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
 	public Bank(){
 		G = Util.getRandom();
@@ -62,10 +63,26 @@ public class Bank {
 	 * Deposit
 	 */
 	
-	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException{
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
+		checkShopId(pid, shop);
+		
 		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
+		if(usedCoins.keySet().contains(c)){
+			int otherpid = usedCoins.get(c);
+			// TODO: Find cheating user
+			throw new DoubleSpendingException();
+		}
 		
+		usedCoins.put(c,pid); // TODO: save c, sigma, pid
+		usedPids.add(pid);
+	}
+	
+	private void checkShopId(int pid, Shop shop) throws DoubleDepositException, InvalidPidException{
+		if(usedPids.contains(pid)) throw new DoubleDepositException();
+		
+		int id = pid - shop.getShopId();
+		if(0 > id || id > 100000) throw new InvalidPidException();
 	}
 	
 	/*
