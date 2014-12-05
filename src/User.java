@@ -68,7 +68,7 @@ public class User {
 		return this;
 	}
 	
-	public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException {
+	public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
 		if(coins.size() == 0) throw new NoCoinException();
 		int pid = shop.getpid();
 		Coin c = coins.removeFirst();
