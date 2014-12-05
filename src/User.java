@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 public class User {
@@ -7,6 +8,7 @@ public class User {
 	private int gu,hu;
 	private int U;
 	
+	private LinkedList<Coin> coins = new LinkedList<Coin>();
 	
 	public User(int U, Bank bank){
 		this.bank = bank;
@@ -28,7 +30,7 @@ public class User {
 		// Create coin and save it
 		int x = Util.modPow(gu, s);
 		int a = Util.modMult(Util.modPow(Parameters.g1, v1), Util.modPow(Parameters.g2,v2));
-		OTvk coin = new OTvk(x,a);
+		OTvk vk = new OTvk(x,a);
 		OTsk sk = new OTsk(Util.modMult(U, s),s,v1,v2);
 		
 		// Randomize user id
@@ -60,11 +62,29 @@ public class User {
 		// Compute signature
 		BKSig sigmaB = new BKSig(bank.getG(), bank.getH(), gus, hus, HbarHbarp, hbarshbarp, Util.modAdd(z, zp));
 		
-		// TODO: save coin
+		Coin c = new Coin(vk,sk,sigmaB);
+		coins.add(c);
 	}
 	
+	public void spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException{
+		int pid = shop.getpid();
+		Coin c = coins.removeFirst();
+		Pair sigma = Util.OTSign(c.sk, pid);
+		shop.buy(c.vk, c.sigmaB, sigma, pid);
+	}	
 	
 	
-	
+	private class Coin{
+		public final OTvk vk;
+		public final OTsk sk;
+		public final BKSig sigmaB;
+		
+		public Coin(OTvk vk, OTsk sk, BKSig sigmaB){
+			this.vk = vk;
+			this.sk = sk;
+			this.sigmaB = sigmaB;
+		}
+		
+	}
 
 }

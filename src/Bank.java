@@ -11,6 +11,8 @@ public class Bank {
 	
 	private Map<Integer,Integer> withdrawSession = new HashMap<Integer,Integer>();
 	
+	
+	
 	public Bank(){
 		G = Util.getRandom();
 		w = Util.getRandom();
@@ -56,6 +58,15 @@ public class Bank {
 		return z;
 	}
 	
+	/*
+	 * Deposit
+	 */
+	
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException{
+		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
+		
+		
+	}
 	
 	/*
 	 *	Helpers 
