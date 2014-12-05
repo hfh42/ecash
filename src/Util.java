@@ -51,9 +51,9 @@ public class Util {
 	 * Bank Signature
 	 */
 	
-	public static boolean bankVerify(int G, int H, int x, int a, BankSignature sigmaB){
+	public static boolean BKVer(int G, int H, OTvk c, BKSig sigmaB){
 		ArrayList<Integer> list = sigmaB.getList();
-		list.add(a);
+		list.add(c.a);
 		int e = hash(list);
 		
 		int Gz = modPow(G,sigmaB.z);
@@ -69,15 +69,15 @@ public class Util {
 	 */
 	
 	public static Pair OTSign(OTsk sk, int m){
-		int z1 = modAdd(modMult(m,sk.w1), sk.r.x1);
-		int z2 = modAdd(modMult(m,sk.w2), sk.r.x2);
+		int z1 = modAdd(modMult(m,sk.w1), sk.v1);
+		int z2 = modAdd(modMult(m,sk.w2), sk.v2);
 				
 		return new Pair(z1,z2);
 	}
 	
-	public static boolean OTVer(int x, int a, int m, Pair z){
+	public static boolean OTVer(OTvk c, int m, Pair z){
 		int left = modMult(modPow(Parameters.g1,z.x1),modPow(Parameters.g2,z.x2));
-		int right = modMult(a, modPow(x,m));
+		int right = modMult(c.a, modPow(c.x,m));
 		return left == right;
 	}
 

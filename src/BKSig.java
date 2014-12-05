@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 
 
-public class BankSignature {
+public class BKSig {
 	public final int G,H,gu,hu,Hbar,hbar,z;
 
-	public BankSignature(int G, int H, int gu, int hu, int Hbar, int hbar, int z){
+	public BKSig(int G, int H, int gu, int hu, int Hbar, int hbar, int z){
 		this.G = G;
 		this.H = H;
 		this.gu = gu;
@@ -14,6 +14,10 @@ public class BankSignature {
 		this.z = z;
 	}
 	
+	/**
+	 * Gives a list of elements in the signature which should be hashed
+	 * @return list of all fields except z
+	 */
 	public ArrayList<Integer> getList(){
 		ArrayList<Integer> res = new ArrayList<Integer>();
 		res.add(G);
