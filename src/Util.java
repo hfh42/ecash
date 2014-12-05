@@ -11,7 +11,11 @@ public class Util {
 
 	private static Random rnd = new Random(System.currentTimeMillis());
 	
-	public static int getRandom(){
+	public static int getRandomGroup(){
+		return rnd.nextInt(Parameters.p);
+	}
+	
+	public static int getRandomExp(){
 		return rnd.nextInt(Parameters.q);
 	}
 	
@@ -42,13 +46,13 @@ public class Util {
 		
 		while(exp > 0){
 			if ( mod(exp,2) == 1){
-				x = mod((x*y),Parameters.q);
+				x = mod((x*y),Parameters.p);
 			}
-			y = mod((y*y),Parameters.q);
+			y = mod((y*y),Parameters.p);
 			exp /= 2;
 		}
 
-		int result = mod(x,Parameters.q);
+		int result = mod(x,Parameters.p);
 		return result;
 		//BigInteger b = BigInteger.valueOf(base);
 		//BigInteger e = BigInteger.valueOf(exp);
@@ -58,20 +62,29 @@ public class Util {
 	
 	public static int modInverse(int base){
 		//return modPow(base, -1);
-		return modPow(base, Parameters.q-2);
+		return modPow(base, Parameters.p-2);
 	}
 		
-	public static int modMult(int x, int y){
+	public static int multG(int x, int y){
+		return mult(x,y,Parameters.p);
+	}
+	
+	public static int multE(int x, int y){
+		return mult(x,y,Parameters.q);
+	}
+	
+	private static int mult(int x, int y, int m){
 		long a = x, b = y;
-		return (mod((a*b),Parameters.q));
+		return (mod((a*b),m));		
 	}
-		
-	public static int modAdd(int x, int y){
+	
+	public static int addE(int x, int y){
 		long a = x, b = y;
 		return (mod((a+b),Parameters.q));
 	}
+	
 
-	public static int mod(long base, int mod) {
+	private static int mod(long base, int mod) {
 		int r = (int)(base % mod);
 		if(r < 0)
 			r += Math.abs(mod);
@@ -89,9 +102,9 @@ public class Util {
 		int e = hash(list);
 		
 		int Gz = modPow(G,sigmaB.z);
-		int HbarHe = modMult(sigmaB.Hbar,modPow(H,e));
+		int HbarHe = multG(sigmaB.Hbar,modPow(H,e));
 		int gz = modPow(sigmaB.gu,sigmaB.z);
-		int hbarhe = modMult(sigmaB.hbar,modPow(sigmaB.hu,e)); 
+		int hbarhe = multG(sigmaB.hbar,modPow(sigmaB.hu,e)); 
 		
 		return Gz == HbarHe && gz == hbarhe;
 	}
@@ -101,15 +114,15 @@ public class Util {
 	 */
 	
 	public static Pair OTSign(OTsk sk, int m){
-		int z1 = modAdd(modMult(m,sk.w1), sk.v1);
-		int z2 = modAdd(modMult(m,sk.w2), sk.v2);
+		int z1 = addE(multE(m,sk.w1), sk.v1);
+		int z2 = addE(multE(m,sk.w2), sk.v2);
 				
 		return new Pair(z1,z2);
 	}
 	
 	public static boolean OTVer(OTvk c, int m, Pair z){
-		int left = modMult(modPow(Parameters.g1,z.x1),modPow(Parameters.g2,z.x2));
-		int right = modMult(c.a, modPow(c.x,m));
+		int left = multG(modPow(Parameters.g1,z.x1),modPow(Parameters.g2,z.x2));
+		int right = multG(c.a, modPow(c.x,m));
 		return left == right;
 	}
 

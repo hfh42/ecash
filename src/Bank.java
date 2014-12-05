@@ -15,8 +15,8 @@ public class Bank {
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
 	public Bank(){
-		G = Util.getRandom();
-		w = Util.getRandom();
+		G = Util.getRandomGroup();
+		w = Util.getRandomExp();
 		H = Util.modPow(G, w);
 	}
 
@@ -32,7 +32,7 @@ public class Bank {
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		return calh(gu);
+		return Util.modPow(gu,w);
 	}
 	
 
@@ -42,7 +42,7 @@ public class Bank {
 	public Pair withdrawCommit(int gu){
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user"); 
 		
-		int v = Util.getRandom();
+		int v = Util.getRandomExp();
 		int Hbar = Util.modPow(G, v);
 		int hbar = Util.modPow(gu, v);
 		
@@ -55,7 +55,7 @@ public class Bank {
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
 		
 		int v = withdrawSession.remove(gu);		
-		int z = Util.modAdd(Util.modMult(e, w), v);
+		int z = Util.addE(Util.multE(e, w), v);
 		return z;
 	}
 	
@@ -89,9 +89,7 @@ public class Bank {
 	 *	Helpers 
 	 */
 	
-	private int calh(int g){
-		return Util.modPow(g,w);
-	}
+	
 			
 	private boolean isRegisteredUser(int gu){
 		return users.contains(gu);
