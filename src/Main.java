@@ -22,12 +22,30 @@ public class Main {
 		u2.withdraw().withdraw().withdraw();
 
 		// Spend the coins we just withdrawed
-		u1.spendCoin(s1).spendCoin(s2);
-		u2.spendCoin(s3).spendCoin(s3).spendCoin(s1);
-		u3.spendCoin(s2);
+		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
+		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
+		
+		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
+		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
+		trySpendCoin(u2, s3, "Spent coin for u2 in s1");
+
+		trySpendCoin(u3, s2, "Spent coin for u3 in s2");
 
 		// Try to spend a coin without withdrawing first
-		u3.spendCoin(s1);
+		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
+	}
+
+	private static void trySpendCoin(User u, Shop s, String m) {
+		try {
+			u.spendCoin(s);
+			System.out.println(m);
+		} catch(InvalidCoinException e) {
+			System.out.println("Tried to spend an invalid coin");
+		} catch(InvalidPidException e) {
+			System.out.println("Contacted shop with an invalid transaction ID");
+		} catch(NoCoinException e) {
+			System.out.println("Tried to spend a coin with no coins withdrawn");
+		}
 	}
 
 	private static void testHash() {

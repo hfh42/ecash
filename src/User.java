@@ -20,7 +20,7 @@ public class User {
 	}
 	
 	// called by test class
-	public void withdraw(){
+	public User withdraw(){
 		int s = Util.getRandom();
 		int v1 = Util.getRandom();
 		int v2 = Util.getRandom();
@@ -64,13 +64,18 @@ public class User {
 		
 		Coin c = new Coin(vk,sk,sigmaB);
 		coins.add(c);
+
+		return this;
 	}
 	
-	public void spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException{
+	public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException {
+		if(coins.size() == 0) throw new NoCoinException();
 		int pid = shop.getpid();
 		Coin c = coins.removeFirst();
 		Pair sigma = Util.OTSign(c.sk, pid);
 		shop.buy(c.vk, c.sigmaB, sigma, pid);
+
+		return this;
 	}	
 	
 	
