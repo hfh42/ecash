@@ -1,10 +1,11 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 
 public class BKSig {
-	public final int G,H,gu,hu,Hbar,hbar,z;
+	public final BigInteger G,H,gu,hu,Hbar,hbar,z;
 
-	public BKSig(int G, int H, int gu, int hu, int Hbar, int hbar, int z){
+	public BKSig(BigInteger G, BigInteger H, BigInteger gu, BigInteger hu, BigInteger Hbar, BigInteger hbar, BigInteger z){
 		this.G = G;
 		this.H = H;
 		this.gu = gu;
@@ -18,8 +19,8 @@ public class BKSig {
 	 * Gives a list of elements in the signature which should be hashed
 	 * @return list of all fields except z
 	 */
-	public ArrayList<Integer> getList(){
-		ArrayList<Integer> res = new ArrayList<Integer>();
+	public ArrayList<BigInteger> getList(){
+		ArrayList<BigInteger> res = new ArrayList<BigInteger>();
 		res.add(G);
 		res.add(H);
 		res.add(gu);

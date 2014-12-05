@@ -1,18 +1,19 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class Bank {
-	private int G, H;
-	private int w;
+	private BigInteger G, H;
+	private BigInteger w;
 	
-	private ArrayList<Integer> users = new ArrayList<Integer>();
+	private ArrayList<BigInteger> users = new ArrayList<BigInteger>();
 	
-	private Map<Integer,Integer> withdrawSession = new HashMap<Integer,Integer>();
+	private Map<BigInteger,BigInteger> withdrawSession = new HashMap<BigInteger,BigInteger>();
 	
-	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
-	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
+	private Map<OTvk,BigInteger> usedCoins = new HashMap<OTvk,BigInteger>();
+	private ArrayList<BigInteger> usedPids	= new ArrayList<BigInteger>();
 	
 	public Bank(){
 		G = Util.getRandomGroup();
@@ -20,48 +21,42 @@ public class Bank {
 		H = Util.modPow(G, w);
 	}
 
-	public int getG() {return G;}
-	public int getH() {return H;}
+	public BigInteger getG() {return G;}
+	public BigInteger getH() {return H;}
 
 	
 	/*
 	 * User Registration
 	 */
 
-	public int register(int gu){
+	public BigInteger register(BigInteger gu){
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		int hu = Util.modPow(gu,w);
-		assert Util.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
-		return hu;
+		return Util.modPow(gu, w);
 	}
 	
 
 	/*
 	 * Withdraw methods
 	 */
-	public Pair withdrawCommit(int gu){
-		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user"); 
-		
-		int v = Util.getRandomExp();
-		int Hbar = Util.modPow(G, v);
-		assert Util.isInGroup(Hbar);
-		int hbar = Util.modPow(gu, v);
-		assert Util.isInGroup(hbar);
+	public Pair withdrawCommit(BigInteger gu){
+		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
+
+		BigInteger v = Util.getRandomExp();
+		BigInteger Hbar = Util.modPow(G, v);
+		BigInteger hbar = Util.modPow(gu, v);
 		
 		withdrawSession.put(gu,v);
 		
 		return new Pair(Hbar,hbar);
 	}
 	
-	public int withdrawResponse(int gu, int e){
+	public BigInteger withdrawResponse(BigInteger gu, BigInteger e){
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
-		
-		int v = withdrawSession.remove(gu);		
-		int z = Util.addE(Util.multE(e, w), v);
-		assert Util.isCorrectExp(z): "z " + z;
-		
+
+		BigInteger v = withdrawSession.remove(gu);
+		BigInteger z = Util.addE(Util.multE(e, w), v);
 		return z;
 	}
 	
@@ -69,13 +64,13 @@ public class Bank {
 	 * Deposit
 	 */
 	
-	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, BigInteger pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
 		checkShopId(pid, shop);
 		
 		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
 		if(usedCoins.keySet().contains(c)){
-			int otherpid = usedCoins.get(c);
+			BigInteger otherpid = usedCoins.get(c);
 			// TODO: Find cheating user
 			throw new DoubleSpendingException();
 		}
@@ -84,11 +79,11 @@ public class Bank {
 		usedPids.add(pid);
 	}
 	
-	private void checkShopId(int pid, Shop shop) throws DoubleDepositException, InvalidPidException{
+	private void checkShopId(BigInteger pid, Shop shop) throws DoubleDepositException, InvalidPidException{
 		if(usedPids.contains(pid)) throw new DoubleDepositException();
-		
-		int id = pid - shop.getShopId();
-		if(0 > id || id > 100000) throw new InvalidPidException();
+
+		BigInteger id = pid.subtract(shop.getShopId());
+		if(0 > id.compareTo(BigInteger.ZERO) || id.compareTo(new BigInteger("100000")) > 0) throw new InvalidPidException();
 	}
 	
 	/*
@@ -97,7 +92,7 @@ public class Bank {
 	
 	
 			
-	private boolean isRegisteredUser(int gu){
+	private boolean isRegisteredUser(BigInteger gu){
 		return users.contains(gu);
 	}
 	

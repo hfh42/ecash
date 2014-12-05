@@ -1,26 +1,27 @@
+import java.math.BigInteger;
 
 public class Shop {
 	
-	private final int shopid;
-	private int transactionCounter = 0;
+	private final BigInteger shopid;
+	private BigInteger transactionCounter = BigInteger.ZERO;
 	
 	private Bank bank;
 
-	public Shop(int id, Bank bank){
-		this.shopid = id*100;
+	public Shop(BigInteger id, Bank bank){
+		this.shopid = id.multiply(new BigInteger("1000000"));
 		this.bank = bank;
 	}
 	
-	public int getShopId(){
+	public BigInteger getShopId(){
 		return shopid;
 	}
 	
-	public int getpid(){
-		transactionCounter++;
-		return shopid+transactionCounter;
+	public BigInteger getpid(){
+		transactionCounter.add(BigInteger.ONE);
+		return shopid.add(transactionCounter);
 	}
 	
-	public void buy(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
+	public void buy(OTvk c, BKSig sigmaB, Pair sigma, BigInteger pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
 		if(!isValidPid(pid)) throw new InvalidPidException();
 		
 		boolean b1 = !Util.BKVer(bank.getG(), bank.getH(), c, sigmaB);
@@ -33,9 +34,9 @@ public class Shop {
 		bank.deposit(c,sigmaB,sigma,pid, this);
 	}
 	
-	private boolean isValidPid(int pid){
-		int id = pid - shopid;
-		return !(0 > id || id > 100000);
+	private boolean isValidPid(BigInteger pid){
+		BigInteger id = pid.subtract(shopid);
+		return !(0 > id.compareTo(BigInteger.ZERO) || id.compareTo(new BigInteger("100000")) > 0);
 	}
 	
 }

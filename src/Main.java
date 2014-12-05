@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -7,32 +8,32 @@ public class Main {
 		Bank b = new Bank();
 
 		// Create some users
-		User u1 = new User(225, b);
-/*		User u2 = new User(1337, b);
-		User u3 = new User(23456789, b);*/
+		User u1 = new User(new BigInteger("5256445"), b);
+		User u2 = new User(new BigInteger("1541"), b);
+		User u3 = new User(new BigInteger("1353"), b);
 
 		// Create a few shops
-		Shop s1 = new Shop(22, b);
-		Shop s2 = new Shop(37, b);
-		Shop s3 = new Shop(42, b);
+		Shop s1 = new Shop(new BigInteger("22"), b);
+		Shop s2 = new Shop(new BigInteger("37"), b);
+		Shop s3 = new Shop(new BigInteger("42"), b);
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
-	/*	u3.withdraw();
-		u2.withdraw().withdraw().withdraw();*/
+		u3.withdraw();
+		u2.withdraw().withdraw().withdraw();
 
 		// Spend the coins we just withdrawed
 		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
 		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
 		
-/*		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
+		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s1");
 
 		trySpendCoin(u3, s2, "Spent coin for u3 in s2");
 
 		// Try to spend a coin without withdrawing first
-		trySpendCoin(u3, s1, "Spent coin for u3 in s1");*/
+		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
 	}
 
 	private static void trySpendCoin(User u, Shop s, String m) {
@@ -62,7 +63,7 @@ public class Main {
 		Random rnd = new Random();
 		for(int i = 0; i < 7; i++)
 			test.add(rnd.nextInt());
-		System.out.println(Util.hash(test));
+		//System.out.println(Util.hash(test));
 	}
 
 }
