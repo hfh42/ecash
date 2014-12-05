@@ -7,9 +7,9 @@ public class Main {
 		Bank b = new Bank();
 
 		// Create some users
-		User u1 = new User(424242, b);
-		User u2 = new User(1337, b);
-		User u3 = new User(123456789, b);
+		User u1 = new User(225, b);
+/*		User u2 = new User(1337, b);
+		User u3 = new User(23456789, b);*/
 
 		// Create a few shops
 		Shop s1 = new Shop(22, b);
@@ -18,21 +18,21 @@ public class Main {
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
-		u3.withdraw();
-		u2.withdraw().withdraw().withdraw();
+	/*	u3.withdraw();
+		u2.withdraw().withdraw().withdraw();*/
 
 		// Spend the coins we just withdrawed
 		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
 		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
 		
-		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
+/*		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s1");
 
 		trySpendCoin(u3, s2, "Spent coin for u3 in s2");
 
 		// Try to spend a coin without withdrawing first
-		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
+		trySpendCoin(u3, s1, "Spent coin for u3 in s1");*/
 	}
 
 	private static void trySpendCoin(User u, Shop s, String m) {

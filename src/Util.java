@@ -19,6 +19,10 @@ public class Util {
 		return rnd.nextInt(Parameters.q);
 	}
 	
+	public static boolean isInGroup(int g){
+		return modPow(g,Parameters.q) == Parameters.p -1;
+	}
+	
 	public static int hash(ArrayList<Integer> list){
 		if(list.size() != 7) throw new IllegalArgumentException("The input list must be of length 7 to be hashed.");
 
@@ -84,7 +88,7 @@ public class Util {
 	}
 	
 
-	private static int mod(long base, int mod) {
+	public static int mod(long base, int mod) {
 		int r = (int)(base % mod);
 		if(r < 0)
 			r += Math.abs(mod);
@@ -102,9 +106,22 @@ public class Util {
 		int e = hash(list);
 		
 		int Gz = modPow(G,sigmaB.z);
+		assert Util.isInGroup(Gz);
 		int HbarHe = multG(sigmaB.Hbar,modPow(H,e));
+		assert Util.isInGroup(HbarHe);
 		int gz = modPow(sigmaB.gu,sigmaB.z);
-		int hbarhe = multG(sigmaB.hbar,modPow(sigmaB.hu,e)); 
+		assert Util.isInGroup(gz);
+		int hbarhe = multG(sigmaB.hbar,modPow(sigmaB.hu,e));
+		assert Util.isInGroup(hbarhe); 
+		
+		/*System.out.println("G " + G);		
+		System.out.println("H " + H);		
+		System.out.println("hash/e " + e);		
+		System.out.println("gu " + sigmaB.gu);		
+		System.out.println("hu " + sigmaB.hu);		
+		System.out.println("Hbar " + sigmaB.Hbar);		
+		System.out.println("hbar " + sigmaB.hbar);		
+		System.out.println("z " + sigmaB.z);*/
 		
 		return Gz == HbarHe && gz == hbarhe;
 	}
@@ -115,14 +132,18 @@ public class Util {
 	
 	public static Pair OTSign(OTsk sk, int m){
 		int z1 = addE(multE(m,sk.w1), sk.v1);
+		assert z1 < Parameters.q && z1 > 0;
 		int z2 = addE(multE(m,sk.w2), sk.v2);
+		assert z2 < Parameters.q && z2 > 0;
 				
 		return new Pair(z1,z2);
 	}
 	
 	public static boolean OTVer(OTvk c, int m, Pair z){
 		int left = multG(modPow(Parameters.g1,z.x1),modPow(Parameters.g2,z.x2));
+		assert Util.isInGroup(left);
 		int right = multG(c.a, modPow(c.x,m));
+		assert Util.isInGroup(right);
 		return left == right;
 	}
 
