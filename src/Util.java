@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
-
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.lang.RuntimeException;
+import java.lang.IllegalArgumentException;
+import java.nio.ByteBuffer;
 
 public class Util {
 	
@@ -10,7 +15,20 @@ public class Util {
 	}
 	
 	public static int hash(ArrayList<Integer> list){
-		return 42; // TODO: make hash
+		if(list.size() != 7) throw new IllegalArgumentException("The input list must be of length 7 to be hashed.");
+
+		ByteBuffer bb = ByteBuffer.allocate(4*list.size());
+		for(Integer i : list)
+			bb.putInt(i);
+
+		MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+			BigInteger result = new BigInteger(1,digest.digest(bb.array()));
+			return result.mod(BigInteger.valueOf(Parameters.q)).intValue();
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("Could not complete hashing due to unexisting algorithm.", e);
+		}
 	}
 	
 	
