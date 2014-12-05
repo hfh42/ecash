@@ -1,27 +1,32 @@
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.*;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Bank b = new Bank();
+		final Bank b = new Bank();
 
 		// Create some users
 		User u1 = new User(424242, b);
 		User u2 = new User(1337, b);
 		User u3 = new User(123456789, b);
+        final ArrayList<User> users = new ArrayList<User>();
+        users.add(u1); users.add(u2); users.add(u3);
 
 		// Create a few shops
 		Shop s1 = new Shop(22, b);
 		Shop s2 = new Shop(37, b);
 		Shop s3 = new Shop(42, b);
+        final ArrayList<Shop> shops = new ArrayList<Shop>();
+        shops.add(s1); shops.add(s2); shops.add(s3);
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
 		u3.withdraw();
 		u2.withdraw().withdraw().withdraw();
 
-		// Spend the coins we just withdrawed
+		// Spend the coins we just withdrawn
 		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
 		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
 		
@@ -33,6 +38,14 @@ public class Main {
 
 		// Try to spend a coin without withdrawing first
 		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
+
+        testInverse(159885032);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new GUIInterface(b, users, shops);
+            }
+        });
 	}
 
 	private static void trySpendCoin(User u, Shop s, String m) {
@@ -52,9 +65,11 @@ public class Main {
 		}
 	}
 
-	private static void createAndShowGUI() {
-		
-	}
+    private static void testInverse(int a) {
+        int b =  Util.modInverse(a);
+        System.out.println(a + "^-1 = " + b);
+        System.out.println(a + "*" + b + " = " + Util.multG(a,b));
+    }
 
 	private static void testHash() {
 		// test hashing

@@ -42,6 +42,7 @@ public class Util {
 	 */
 	
 	public static int modPow(int base, int exp){
+        exp = mod(exp, Parameters.q);
 		long x = 1, y = base;
 		
 		while(exp > 0){
