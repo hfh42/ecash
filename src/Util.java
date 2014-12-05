@@ -12,15 +12,19 @@ public class Util {
 	private static Random rnd = new Random(System.currentTimeMillis());
 	
 	public static int getRandomGroup(){
-		return rnd.nextInt(Parameters.p);
+		return rnd.nextInt(Parameters.p-1)+1;
 	}
 	
 	public static int getRandomExp(){
-		return rnd.nextInt(Parameters.q);
+		return rnd.nextInt(Parameters.p-1)+1;
 	}
 	
 	public static boolean isInGroup(int g){
-		return modPow(g,Parameters.q) == Parameters.p -1;
+		return g < Parameters.p && g > 0;
+	}
+	
+	public static boolean isCorrectExp(int exp){
+		return exp < Parameters.p && exp >= 0;
 	}
 	
 	public static int hash(ArrayList<Integer> list){
@@ -33,8 +37,8 @@ public class Util {
 		MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("SHA-256");
-			BigInteger result = new BigInteger(1,digest.digest(bb.array()));
-			return result.mod(BigInteger.valueOf(Parameters.q)).intValue();
+			BigInteger result = new BigInteger(1,digest.digest(bb.array()));			
+			return result.abs().mod(BigInteger.valueOf(Parameters.p)).intValue();
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("Could not complete hashing due to unexisting algorithm.", e);
 		}
@@ -66,7 +70,10 @@ public class Util {
 	
 	public static int modInverse(int base){
 		//return modPow(base, -1);
-		return modPow(base, Parameters.p-2);
+		int result = modPow(base, Parameters.p-2);
+		int t = multG(base, result);
+		assert t == 1;
+		return result;
 	}
 		
 	public static int multG(int x, int y){
@@ -74,7 +81,7 @@ public class Util {
 	}
 	
 	public static int multE(int x, int y){
-		return mult(x,y,Parameters.q);
+		return mult(x,y,Parameters.p);
 	}
 	
 	private static int mult(int x, int y, int m){
@@ -84,11 +91,16 @@ public class Util {
 	
 	public static int addE(int x, int y){
 		long a = x, b = y;
-		return (mod((a+b),Parameters.q));
+		long result = a + b;
+		while(result < 0){
+			result = result + Parameters.p;
+		}
+		return (mod((result),Parameters.p));
 	}
 	
 
 	public static int mod(long base, int mod) {
+		assert base >= 0 ;
 		int r = (int)(base % mod);
 		if(r < 0)
 			r += Math.abs(mod);
@@ -132,9 +144,9 @@ public class Util {
 	
 	public static Pair OTSign(OTsk sk, int m){
 		int z1 = addE(multE(m,sk.w1), sk.v1);
-		assert z1 < Parameters.q && z1 > 0;
+		assert Util.isCorrectExp(z1): "z1: " + z1;
 		int z2 = addE(multE(m,sk.w2), sk.v2);
-		assert z2 < Parameters.q && z2 > 0;
+		assert Util.isCorrectExp(z2): "z2: " + z2;
 				
 		return new Pair(z1,z2);
 	}

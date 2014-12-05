@@ -60,7 +60,7 @@ public class Bank {
 		
 		int v = withdrawSession.remove(gu);		
 		int z = Util.addE(Util.multE(e, w), v);
-		assert z < Parameters.q && z > 0;
+		assert Util.isCorrectExp(z): "z " + z;
 		
 		return z;
 	}

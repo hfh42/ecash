@@ -7,7 +7,7 @@ public class Shop {
 	private Bank bank;
 
 	public Shop(int id, Bank bank){
-		this.shopid = id*1000000;
+		this.shopid = id*100;
 		this.bank = bank;
 	}
 	

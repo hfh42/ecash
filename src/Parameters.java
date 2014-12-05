@@ -2,8 +2,8 @@
 public class Parameters {
 	public static final int p = 2027; //1073742623;
 	public static final int q = 1013; //536871311; // p=2q+1 , p = 1073742623 
-	public static final int g1 = 506; //48395724; // g1^{p-1/2} = -1 mod p
-	public static final int g2 = 800; //455432218;
+	public static final int g1 = 917; //48395724; // g1^{p-1/2} = -1 mod p
+	public static final int g2 = 254; //455432218;
 }
 
 /*

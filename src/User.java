@@ -84,13 +84,14 @@ public class User {
 		list.add(a);
 		
 		int hash = Util.hash(list);
+		assert hash >= 0;
 		int e = Util.addE(hash,-ep);
-		assert e < Parameters.q && e > 0;
+		assert Util.isCorrectExp(e);
 		
 		// Get response from Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);
 		int sumz = Util.addE(z, zp);
-		assert sumz < Parameters.q && sumz > 0;
+		assert Util.isCorrectExp(sumz);
 		
 		// Compute signature
 		BKSig sigmaB = new BKSig(bank.getG(), bank.getH(), gus, hus, HbarHbarp, hbarshbarp, sumz);
