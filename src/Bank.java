@@ -15,9 +15,9 @@ public class Bank {
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
 	public Bank(){
-		G = Util.getRandomGroup();
-		w = Util.getRandomExp();
-		H = Util.modPow(G, w);
+		G = Group.getRandomGroupElement();
+		w = Group.getRandomExponent();
+		H = Group.modPow(G, w);
 	}
 
 	public int getG() {return G;}
@@ -32,8 +32,8 @@ public class Bank {
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		int hu = Util.modPow(gu,w);
-		assert Util.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
+		int hu = Group.modPow(gu,w);
+		assert Group.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
 		return hu;
 	}
 	
@@ -44,11 +44,11 @@ public class Bank {
 	public Pair withdrawCommit(int gu){
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user"); 
 		
-		int v = Util.getRandomExp();
-		int Hbar = Util.modPow(G, v);
-		assert Util.isInGroup(Hbar);
-		int hbar = Util.modPow(gu, v);
-		assert Util.isInGroup(hbar);
+		int v = Group.getRandomExponent();
+		int Hbar = Group.modPow(G, v);
+		assert Group.isInGroup(Hbar);
+		int hbar = Group.modPow(gu, v);
+		assert Group.isInGroup(hbar);
 		
 		withdrawSession.put(gu,v);
 		
@@ -59,8 +59,8 @@ public class Bank {
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
 		
 		int v = withdrawSession.remove(gu);		
-		int z = Util.addE(Util.multE(e, w), v);
-		assert Util.isCorrectExp(z): "z " + z;
+		int z = Group.addE(Group.multE(e, w), v);
+		assert Group.isCorrectExp(z): "z " + z;
 		
 		return z;
 	}

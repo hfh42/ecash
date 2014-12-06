@@ -15,51 +15,51 @@ public class User {
 		this.U = U;
 		
 		// User registration 
-		int g1U = Util.modPow(Parameters.g1,U);
-		assert Util.isInGroup(g1U): "g1U: " + g1U; 
-		gu = Util.multG(g1U, Parameters.g2);
-		assert Util.isInGroup(gu): "gu: " + gu + ", g1U: " + g1U;
+		int g1U = Group.modPow(Parameters.g1,U);
+		assert Group.isInGroup(g1U): "g1U: " + g1U; 
+		gu = Group.multG(g1U, Parameters.g2);
+		assert Group.isInGroup(gu): "gu: " + gu + ", g1U: " + g1U;
 		hu = bank.register(gu);
-		assert Util.isInGroup(hu): "hu: " + hu;
+		assert Group.isInGroup(hu): "hu: " + hu;
 	}
 	
 	// called by test class
 	public User withdraw(){
-		int s = Util.getRandomExp();
-		int v1 = Util.getRandomExp();
-		int v2 = Util.getRandomExp();
-		int zp = Util.getRandomExp();
-		int ep = Util.getRandomExp();
+		int s = Group.getRandomExponent();
+		int v1 = Group.getRandomExponent();
+		int v2 = Group.getRandomExponent();
+		int zp = Group.getRandomExponent();
+		int ep = Group.getRandomExponent();
 
 		// Create coin and save it
-		int x = Util.modPow(gu, s);
-		assert Util.isInGroup(x);
-		int a = Util.multG(Util.modPow(Parameters.g1, v1), Util.modPow(Parameters.g2,v2));
-		assert Util.isInGroup(a);
+		int x = Group.modPow(gu, s);
+		assert Group.isInGroup(x);
+		int a = Group.multG(Group.modPow(Parameters.g1, v1), Group.modPow(Parameters.g2,v2));
+		assert Group.isInGroup(a);
 		OTvk vk = new OTvk(x,a);
-		OTsk sk = new OTsk(Util.multE(U, s),s,v1,v2);
+		OTsk sk = new OTsk(Group.multE(U, s),s,v1,v2);
 		
 		// Randomize user id
 		int gus = x;
-		int hus = Util.modPow(hu, s);
-		assert Util.isInGroup(hus);
+		int hus = Group.modPow(hu, s);
+		assert Group.isInGroup(hus);
 		
 		// Get commitment from Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
-		int Gzp = Util.modPow(bank.getG(), zp);
-		assert Util.isInGroup(Gzp);
-		int Hep = Util.modPow(bank.getH(), ep);
-		assert Util.isInGroup(Hep);
-		int Hnegep = Util.modInverse(Hep);
-		assert Util.isInGroup(Hnegep);
-		int Hbarp = Util.multG(Gzp,Hnegep);
-		assert Util.isInGroup(Hbarp);
-		int hbarp = Util.multG(Util.modPow(gus, zp),Util.modInverse(Util.modPow(hus, ep)));
-		assert Util.isInGroup(hbarp);
-		int HbarHbarp = Util.multG(pairHbarhbar.x1, Hbarp);
-		assert Util.isInGroup(HbarHbarp);
-		int hbarshbarp = Util.multG(Util.modPow(pairHbarhbar.x2,s), hbarp);
-		assert Util.isInGroup(hbarshbarp);
+		int Gzp = Group.modPow(bank.getG(), zp);
+		assert Group.isInGroup(Gzp);
+		int Hep = Group.modPow(bank.getH(), ep);
+		assert Group.isInGroup(Hep);
+		int Hnegep = Group.modInverse(Hep);
+		assert Group.isInGroup(Hnegep);
+		int Hbarp = Group.multG(Gzp,Hnegep);
+		assert Group.isInGroup(Hbarp);
+		int hbarp = Group.multG(Group.modPow(gus, zp),Group.modInverse(Group.modPow(hus, ep)));
+		assert Group.isInGroup(hbarp);
+		int HbarHbarp = Group.multG(pairHbarhbar.x1, Hbarp);
+		assert Group.isInGroup(HbarHbarp);
+		int hbarshbarp = Group.multG(Group.modPow(pairHbarhbar.x2,s), hbarp);
+		assert Group.isInGroup(hbarshbarp);
 		
 		
 		/*System.out.println("G " + bank.getG());
@@ -85,13 +85,13 @@ public class User {
 		
 		int hash = Util.hash(list);
 		assert hash >= 0;
-		int e = Util.addE(hash,-ep);
-		assert Util.isCorrectExp(e);
+		int e = Group.addE(hash,-ep);
+		assert Group.isCorrectExp(e);
 		
 		// Get response from Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);
-		int sumz = Util.addE(z, zp);
-		assert Util.isCorrectExp(sumz);
+		int sumz = Group.addE(z, zp);
+		assert Group.isCorrectExp(sumz);
 		
 		// Compute signature
 		BKSig sigmaB = new BKSig(bank.getG(), bank.getH(), gus, hus, HbarHbarp, hbarshbarp, sumz);
