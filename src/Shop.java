@@ -1,4 +1,9 @@
-import java.util.List;
+import signature.bank.BKSig;
+import signature.ot.OTvk;
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
 
 
 public class Shop {
@@ -8,12 +13,9 @@ public class Shop {
 	
 	private Bank bank;
 	
-	private List<Integer> elms;
-
-	public Shop(int id, Bank bank, List<Integer> elms){
-		this.shopid = id*100;
+	public Shop(int id, Bank bank){
+		this.shopid = id*10;
 		this.bank = bank;
-		this.elms = elms;
 	}
 	
 	public int getShopId(){
@@ -28,8 +30,8 @@ public class Shop {
 	public void buy(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
 		if(!isValidPid(pid)) throw new InvalidPidException();
 		
-		boolean b1 = !Util.BKVer(bank.getG(), bank.getH(), c, sigmaB,elms);
-		boolean b2 = !Util.OTVer(c, pid, sigma,elms);
+		boolean b1 = !Util.BKVer(bank.getG(), bank.getH(), c, sigmaB);
+		boolean b2 = !Util.OTVer(c, pid, sigma);
 		if(b1 || b2) {
 			System.out.println("b1: " + b1 + ", b2: " + b2);
 			throw new InvalidCoinException();

@@ -1,6 +1,14 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
+
+import signature.bank.BKSig;
+import signature.ot.OTsk;
+import signature.ot.OTvk;
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
+import exception.NoCoinException;
 
 
 public class User {
@@ -11,21 +19,15 @@ public class User {
 	
 	private LinkedList<Coin> coins = new LinkedList<Coin>();
 	
-	private List<Integer> elms;
 	
-	public User(int U, Bank bank, List<Integer> elements){
+	public User(int U, Bank bank){
 		this.bank = bank;
 		this.U = U;
 		
-		elms = elements;
-		
 		// User registration 
-		int g1U = Group.modPow(Parameters.g1,U);
-		assert Group.isInGroup(g1U, elms): "g1U: " + g1U; 
-		gu = Group.multG(g1U, Parameters.g2);
-		assert Group.isInGroup(gu, elms): "gu: " + gu + ", g1U: " + g1U;
+		int g1U = Group.pow(Group.g1,U);
+		gu = Group.mult(g1U, Group.g2);
 		hu = bank.register(gu);
-		assert Group.isInGroup(hu, elms): "hu: " + hu;
 	}
 	
 	// called by test class
@@ -37,46 +39,24 @@ public class User {
 		int ep = Group.getRandomExponent();
 
 		// Create coin and save it
-		int x = Group.modPow(gu, s);
-		assert Group.isInGroup(x, elms);
-		int a = Group.multG(Group.modPow(Parameters.g1, v1), Group.modPow(Parameters.g2,v2));
-		assert Group.isInGroup(a, elms);
+		int x = Group.pow(gu, s);
+		int a = Group.mult(Group.pow(Group.g1, v1), Group.pow(Group.g2,v2));
 		OTvk vk = new OTvk(x,a);
-		OTsk sk = new OTsk(Group.multE(U, s),s,v1,v2);
+		OTsk sk = new OTsk(Group.expMult(U, s),s,v1,v2);
 		
 		// Randomize user id
 		int gus = x;
-		int hus = Group.modPow(hu, s);
-		assert Group.isInGroup(hus, elms);
+		int hus = Group.pow(hu, s);
 		
 		// Get commitment from Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
-		int Gzp = Group.modPow(bank.getG(), zp);
-		assert Group.isInGroup(Gzp, elms);
-		int Hep = Group.modPow(bank.getH(), ep);
-		assert Group.isInGroup(Hep, elms);
-		int Hnegep = Group.modInverse(Hep);
-		assert Group.isInGroup(Hnegep, elms);
-		int Hbarp = Group.multG(Gzp,Hnegep);
-		assert Group.isInGroup(Hbarp, elms);
-		int hbarp = Group.multG(Group.modPow(gus, zp),Group.modInverse(Group.modPow(hus, ep)));
-		assert Group.isInGroup(hbarp, elms);
-		int HbarHbarp = Group.multG(pairHbarhbar.x1, Hbarp);
-		assert Group.isInGroup(HbarHbarp, elms);
-		int hbarshbarp = Group.multG(Group.modPow(pairHbarhbar.x2,s), hbarp);
-		assert Group.isInGroup(hbarshbarp, elms);
-		
-		
-		/*System.out.println("G " + bank.getG());
-		System.out.println("H " + bank.getH());
-		System.out.println("zp " + zp);
-		System.out.println("ep " + ep);
-		System.out.println("Gzp " + Gzp);
-		System.out.println("Hbar " + pairHbarhbar.x1);
-		System.out.println("Hep " + Hep);
-		System.out.println("Hnegep " + Hnegep);
-		System.out.println("Hbarp " + Hbarp);
-		System.out.println("HbarHbarp " + HbarHbarp);*/
+		int Gzp = Group.pow(bank.getG(), zp);
+		int Hep = Group.pow(bank.getH(), ep);
+		int Hnegep = Group.inverse(Hep);
+		int Hbarp = Group.mult(Gzp,Hnegep);
+		int hbarp = Group.mult(Group.pow(gus, zp),Group.inverse(Group.pow(hus, ep)));
+		int HbarHbarp = Group.mult(pairHbarhbar.x1, Hbarp);
+		int hbarshbarp = Group.mult(Group.pow(pairHbarhbar.x2,s), hbarp);
 		
 		// Compute challenge e from hash
 		ArrayList<Integer> list = new ArrayList<Integer>();
@@ -90,12 +70,12 @@ public class User {
 		
 		int hash = Util.hash(list);
 		assert hash >= 0;
-		int e = Group.addE(hash,-ep);
+		int e = Group.expAdd(hash,-ep);
 		assert Group.isCorrectExp(e);
 		
 		// Get response from Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);
-		int sumz = Group.addE(z, zp);
+		int sumz = Group.expAdd(z, zp);
 		assert Group.isCorrectExp(sumz);
 		
 		// Compute signature
@@ -104,15 +84,6 @@ public class User {
 		Coin c = new Coin(vk,sk,sigmaB);
 		coins.add(c);
 		
-		/*System.out.println("G " + bank.getG());		
-		System.out.println("H " + bank.getH());		
-		System.out.println("hash/e " + hash);		
-		System.out.println("gu " + gus);		
-		System.out.println("hu " + hus);		
-		System.out.println("Hbar " + HbarHbarp);		
-		System.out.println("hbar " + hbarshbarp);		
-		System.out.println("z " + sumz);*/
-
 		return this;
 	}
 	

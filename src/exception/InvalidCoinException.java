@@ -1,3 +1,4 @@
+package exception;
 
 public class InvalidCoinException extends Exception {
 	

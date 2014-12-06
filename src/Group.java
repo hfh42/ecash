@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Random;
 
 
@@ -11,60 +10,99 @@ public class Group {
 
 	private static Random rnd = new Random(System.currentTimeMillis());
 
-	public static int getRandomGroupElement(List<Integer> elms){
-		int res = rnd.nextInt(Parameters.p-1)+1;
-		while(!isInGroup(res, elms)){
-			res = rnd.nextInt(Parameters.p-1)+1;
-		}		
+	/**
+	 * Get a random exponent and uses it to calculate random element in the group
+	 * @return a random element in the group of order q
+	 */
+	public static int getRandomGroupElement(){
+		int exp = getRandomExponent(); 
+		int res = mult(pow(g1,exp),g2);
+		assert isInGroup(res);
 		return res; 
+		
+		/* ** Other way to calculate random element **
+		 * int res = rnd.nextInt(Parameters.p-1)+1;
+		 * while(!isInGroup(res, elms)){
+		 * 		res = rnd.nextInt(Parameters.p-1)+1;
+		 * }
+		*/
 	}
 
+	/**
+	 * @return a random exponent between 0 and q-1
+	 */
 	public static int getRandomExponent(){
-		return rnd.nextInt(Parameters.q-1)+1;
+		return rnd.nextInt(q);
 	}
 
-	public static boolean isInGroup(int g, List<Integer> elements){
-		return elements.contains(g);
-		//return g < Parameters.p && g > 0;
+	/**
+	 * Checks that g is in the group: g^q mod p = 1
+	 */
+	public static boolean isInGroup(int g){
+		return power(g, q) == 1;
 	}
 
+	/**
+	 * Check that the exponent is correct: 0 <= exp < q
+	 */
 	public static boolean isCorrectExp(int exp){
-		return exp < Parameters.q && exp >= 0;
+		return exp < q && exp >= 0;
 	}
 	
-	public static int modPow(int base, int exp){
-		long x = 1, y = base;
+	/**
+	 * Power function modulo p
+	 * @param base is a group element
+	 * @param exp is a integer, 0 <= exp < q
+	 * @return base^exp mod p
+	 */
+	public static int pow(int base, int exp){
+		assert isInGroup(base): "Group.pow, base is not in the group";
+		assert isCorrectExp(exp): "Group.pow, exp is not correct";
 		
+		int result = power(base,exp);
+		
+		assert isInGroup(result): "Group.pow gives elm outside group";
+		
+		return result;
+	}
+	
+	/*
+	 * Need private power function with out assertions to be used in the isInGroup check
+	 */
+	private static int power(int base, int exp){		
+		long x = 1, y = base;
 		while(exp > 0){
 			if ( mod(exp,2) == 1){
-				x = mod((x*y),Parameters.p);
+				x = mod((x*y),p);
 			}
-			y = mod((y*y),Parameters.p);
+			y = mod((y*y),p);
 			exp /= 2;
 		}
-
-		int result = mod(x,Parameters.p);
-		return result;
-		//BigInteger b = BigInteger.valueOf(base);
-		//BigInteger e = BigInteger.valueOf(exp);
-
-		//return b.modPow(e, BigInteger.valueOf(Parameters.q)).intValue();
+		return mod(x,p);
 	}
-	
-	public static int modInverse(int base){
-		//return modPow(base, -1);
-		int result = modPow(base, Parameters.p-2);
-		int t = multG(base, result);
-		assert t == 1;
+
+	public static int inverse(int base){
+		assert isInGroup(base): "Group.inverse, base is not in the group";
+		int result = power(base, p-2);
+		assert mult(base, result) == 1: "Group.inverse, result is not the inverse";
+		assert isInGroup(result): "Group.inverse gives element outside the group";
 		return result;
 	}
 		
-	public static int multG(int x, int y){
-		return mult(x,y,Parameters.p);
+	public static int mult(int x, int y){
+		assert isInGroup(x): "Group.mult, x is not in the group";
+		assert isInGroup(y): "Group.mult, y is not in the group";
+		int res = mult(x,y,p);
+		assert isInGroup(res): "Group.mult gives element outside the group";
+		return res;
 	}
 	
-	public static int multE(int x, int y){
-		return mult(x,y,Parameters.q);
+	public static int expMult(int x, int y){
+		assert isCorrectExp(x): "Group.expMult, x is not a corrct exponent";
+		assert isCorrectExp(y): "Group.expMult, y is not a corrct exponent";
+		int res = mult(x,y,q);
+		assert isCorrectExp(res): "Group.expMult gives wrong exponent";		
+		return res;
 	}
 	
 	private static int mult(int x, int y, int m){
@@ -72,18 +110,22 @@ public class Group {
 		return (mod((a*b),m));		
 	}
 	
-	public static int addE(int x, int y){
+	public static int expAdd(int x, int y){
+		assert isCorrectExp(x): "Group.expAdd, x is not a corrct exponent";
+		assert isCorrectExp(y) || isCorrectExp(-y): "Group.expAdd, y is not a corrct exponent";
 		long a = x, b = y;
 		long result = a + b;
 		while(result < 0){
-			result = result + Parameters.q;
+			result = result + q; // make sure that the result is positive
 		}
-		return (mod((result),Parameters.q));
+		int res = (mod((result),q));
+		assert isCorrectExp(res): "Group.expAdd gives wrong exponent";
+		return res;
 	}
 	
 
-	public static int mod(long base, int mod) {
-		assert base >= 0 ;
+	private static int mod(long base, int mod) {
+		assert base >= 0: "Group.mod, base must be positive" ;
 		int r = (int)(base % mod);
 		if(r < 0)
 			r += Math.abs(mod);

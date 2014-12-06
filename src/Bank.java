@@ -3,6 +3,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import signature.bank.BKSig;
+import signature.ot.OTvk;
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
+
 
 public class Bank {
 	private int G, H;
@@ -15,15 +22,11 @@ public class Bank {
 	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
-	private List<Integer> elms;
 	
-	public Bank(List<Integer> elements){
-		elms = elements;
-		G = Group.getRandomGroupElement(elms);
-		assert Group.isInGroup(G, elms);
+	public Bank(){
+		G = Group.getRandomGroupElement();
 		w = Group.getRandomExponent();
-		H = Group.modPow(G, w);
-		assert Group.isInGroup(H, elms);
+		H = Group.pow(G, w);
 	}
 
 	public int getG() {return G;}
@@ -38,8 +41,7 @@ public class Bank {
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		int hu = Group.modPow(gu,w);
-		assert Group.isInGroup(hu, elms): "gu " + gu + ", hu " + hu + ", w " + w;
+		int hu = Group.pow(gu,w);
 		return hu;
 	}
 	
@@ -51,10 +53,8 @@ public class Bank {
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user"); 
 		
 		int v = Group.getRandomExponent();
-		int Hbar = Group.modPow(G, v);
-		assert Group.isInGroup(Hbar, elms);
-		int hbar = Group.modPow(gu, v);
-		assert Group.isInGroup(hbar, elms);
+		int Hbar = Group.pow(G, v);
+		int hbar = Group.pow(gu, v);
 		
 		withdrawSession.put(gu,v);
 		
@@ -65,7 +65,7 @@ public class Bank {
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
 		
 		int v = withdrawSession.remove(gu);		
-		int z = Group.addE(Group.multE(e, w), v);
+		int z = Group.expAdd(Group.expMult(e, w), v);
 		assert Group.isCorrectExp(z): "z " + z;
 		
 		return z;
@@ -78,7 +78,7 @@ public class Bank {
 	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
 		checkShopId(pid, shop);
 		
-		if(!Util.BKVer(G, H, c, sigmaB, elms) && !Util.OTVer(c, pid, sigma, elms)) throw new InvalidCoinException();
+		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
 		if(usedCoins.keySet().contains(c)){
 			int otherpid = usedCoins.get(c);

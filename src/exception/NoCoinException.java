@@ -1,3 +1,4 @@
+package exception;
 public class NoCoinException extends Exception {
 	
 	public NoCoinException(){

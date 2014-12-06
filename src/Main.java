@@ -1,25 +1,26 @@
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
+import exception.NoCoinException;
 
 public class Main {
 
-	public static void main(String[] args) {
-		GroupElm group = new GroupElm();
-		//group.printElements();
-		List<Integer> elements = group.getElements();
-		
-		Bank b = new Bank(elements);
+	public static void main(String[] args) {		
+		Bank b = new Bank();
 
 		// Create some users
-		User u1 = new User(225, b, elements);
-		User u2 = new User(1337, b,elements);
-		User u3 = new User(23456789, b,elements);
+		User u1 = new User(225, b);
+		User u2 = new User(337, b);
+		User u3 = new User(789, b);
 
 		// Create a few shops
-		Shop s1 = new Shop(22, b, elements);
-		Shop s2 = new Shop(37, b, elements);
-		Shop s3 = new Shop(42, b, elements);
+		Shop s1 = new Shop(22, b);
+		Shop s2 = new Shop(37, b);
+		Shop s3 = new Shop(42, b);
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
