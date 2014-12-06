@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class User {
@@ -10,17 +11,21 @@ public class User {
 	
 	private LinkedList<Coin> coins = new LinkedList<Coin>();
 	
-	public User(int U, Bank bank){
+	private List<Integer> elms;
+	
+	public User(int U, Bank bank, List<Integer> elements){
 		this.bank = bank;
 		this.U = U;
 		
+		elms = elements;
+		
 		// User registration 
 		int g1U = Group.modPow(Parameters.g1,U);
-		assert Group.isInGroup(g1U): "g1U: " + g1U; 
+		assert Group.isInGroup(g1U, elms): "g1U: " + g1U; 
 		gu = Group.multG(g1U, Parameters.g2);
-		assert Group.isInGroup(gu): "gu: " + gu + ", g1U: " + g1U;
+		assert Group.isInGroup(gu, elms): "gu: " + gu + ", g1U: " + g1U;
 		hu = bank.register(gu);
-		assert Group.isInGroup(hu): "hu: " + hu;
+		assert Group.isInGroup(hu, elms): "hu: " + hu;
 	}
 	
 	// called by test class
@@ -33,33 +38,33 @@ public class User {
 
 		// Create coin and save it
 		int x = Group.modPow(gu, s);
-		assert Group.isInGroup(x);
+		assert Group.isInGroup(x, elms);
 		int a = Group.multG(Group.modPow(Parameters.g1, v1), Group.modPow(Parameters.g2,v2));
-		assert Group.isInGroup(a);
+		assert Group.isInGroup(a, elms);
 		OTvk vk = new OTvk(x,a);
 		OTsk sk = new OTsk(Group.multE(U, s),s,v1,v2);
 		
 		// Randomize user id
 		int gus = x;
 		int hus = Group.modPow(hu, s);
-		assert Group.isInGroup(hus);
+		assert Group.isInGroup(hus, elms);
 		
 		// Get commitment from Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
 		int Gzp = Group.modPow(bank.getG(), zp);
-		assert Group.isInGroup(Gzp);
+		assert Group.isInGroup(Gzp, elms);
 		int Hep = Group.modPow(bank.getH(), ep);
-		assert Group.isInGroup(Hep);
+		assert Group.isInGroup(Hep, elms);
 		int Hnegep = Group.modInverse(Hep);
-		assert Group.isInGroup(Hnegep);
+		assert Group.isInGroup(Hnegep, elms);
 		int Hbarp = Group.multG(Gzp,Hnegep);
-		assert Group.isInGroup(Hbarp);
+		assert Group.isInGroup(Hbarp, elms);
 		int hbarp = Group.multG(Group.modPow(gus, zp),Group.modInverse(Group.modPow(hus, ep)));
-		assert Group.isInGroup(hbarp);
+		assert Group.isInGroup(hbarp, elms);
 		int HbarHbarp = Group.multG(pairHbarhbar.x1, Hbarp);
-		assert Group.isInGroup(HbarHbarp);
+		assert Group.isInGroup(HbarHbarp, elms);
 		int hbarshbarp = Group.multG(Group.modPow(pairHbarhbar.x2,s), hbarp);
-		assert Group.isInGroup(hbarshbarp);
+		assert Group.isInGroup(hbarshbarp, elms);
 		
 		
 		/*System.out.println("G " + bank.getG());

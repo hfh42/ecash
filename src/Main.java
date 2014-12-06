@@ -1,38 +1,43 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Bank b = new Bank();
+		GroupElm group = new GroupElm();
+		//group.printElements();
+		List<Integer> elements = group.getElements();
+		
+		Bank b = new Bank(elements);
 
 		// Create some users
-		User u1 = new User(225, b);
-/*		User u2 = new User(1337, b);
-		User u3 = new User(23456789, b);*/
+		User u1 = new User(225, b, elements);
+		User u2 = new User(1337, b,elements);
+		User u3 = new User(23456789, b,elements);
 
 		// Create a few shops
-		Shop s1 = new Shop(22, b);
-		Shop s2 = new Shop(37, b);
-		Shop s3 = new Shop(42, b);
+		Shop s1 = new Shop(22, b, elements);
+		Shop s2 = new Shop(37, b, elements);
+		Shop s3 = new Shop(42, b, elements);
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
-	/*	u3.withdraw();
-		u2.withdraw().withdraw().withdraw();*/
+		u3.withdraw();
+		u2.withdraw().withdraw().withdraw();
 
 		// Spend the coins we just withdrawed
 		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
 		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
 		
-/*		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
+		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s3");
 		trySpendCoin(u2, s3, "Spent coin for u2 in s1");
 
 		trySpendCoin(u3, s2, "Spent coin for u3 in s2");
 
 		// Try to spend a coin without withdrawing first
-		trySpendCoin(u3, s1, "Spent coin for u3 in s1");*/
+		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
 	}
 
 	private static void trySpendCoin(User u, Shop s, String m) {

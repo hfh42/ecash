@@ -1,20 +1,31 @@
+import java.util.List;
 import java.util.Random;
 
 
 public class Group {
 
+	public static final int p = 2027; 
+	public static final int q = 1013;  
+	public static final int g1 = 917; 
+	public static final int g2 = 254;
+
 	private static Random rnd = new Random(System.currentTimeMillis());
 
-	public static int getRandomGroupElement(){
-		return rnd.nextInt(Parameters.p-1)+1;
+	public static int getRandomGroupElement(List<Integer> elms){
+		int res = rnd.nextInt(Parameters.p-1)+1;
+		while(!isInGroup(res, elms)){
+			res = rnd.nextInt(Parameters.p-1)+1;
+		}		
+		return res; 
 	}
 
 	public static int getRandomExponent(){
 		return rnd.nextInt(Parameters.q-1)+1;
 	}
 
-	public static boolean isInGroup(int g){
-		return g < Parameters.p && g > 0;
+	public static boolean isInGroup(int g, List<Integer> elements){
+		return elements.contains(g);
+		//return g < Parameters.p && g > 0;
 	}
 
 	public static boolean isCorrectExp(int exp){

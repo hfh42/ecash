@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -38,19 +39,19 @@ public class Util {
 	 * Bank Signature
 	 */
 	
-	public static boolean BKVer(int G, int H, OTvk c, BKSig sigmaB){
+	public static boolean BKVer(int G, int H, OTvk c, BKSig sigmaB, List<Integer> elms){
 		ArrayList<Integer> list = sigmaB.getList();
 		list.add(c.a);
 		int e = hash(list);
 		
 		int Gz = Group.modPow(G,sigmaB.z);
-		assert Group.isInGroup(Gz);
+		assert Group.isInGroup(Gz,elms);
 		int HbarHe = Group.multG(sigmaB.Hbar,Group.modPow(H,e));
-		assert Group.isInGroup(HbarHe);
+		assert Group.isInGroup(HbarHe,elms);
 		int gz = Group.modPow(sigmaB.gu,sigmaB.z);
-		assert Group.isInGroup(gz);
+		assert Group.isInGroup(gz, elms);
 		int hbarhe = Group.multG(sigmaB.hbar,Group.modPow(sigmaB.hu,e));
-		assert Group.isInGroup(hbarhe); 
+		assert Group.isInGroup(hbarhe, elms); 
 		
 		/*System.out.println("G " + G);		
 		System.out.println("H " + H);		
@@ -77,11 +78,11 @@ public class Util {
 		return new Pair(z1,z2);
 	}
 	
-	public static boolean OTVer(OTvk c, int m, Pair z){
+	public static boolean OTVer(OTvk c, int m, Pair z, List<Integer> elms){
 		int left = Group.multG(Group.modPow(Parameters.g1,z.x1),Group.modPow(Parameters.g2,z.x2));
-		assert Group.isInGroup(left);
+		assert Group.isInGroup(left, elms);
 		int right = Group.multG(c.a, Group.modPow(c.x,m));
-		assert Group.isInGroup(right);
+		assert Group.isInGroup(right, elms);
 		return left == right;
 	}
 

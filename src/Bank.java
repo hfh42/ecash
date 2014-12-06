@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -14,10 +15,15 @@ public class Bank {
 	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
-	public Bank(){
-		G = Group.getRandomGroupElement();
+	private List<Integer> elms;
+	
+	public Bank(List<Integer> elements){
+		elms = elements;
+		G = Group.getRandomGroupElement(elms);
+		assert Group.isInGroup(G, elms);
 		w = Group.getRandomExponent();
 		H = Group.modPow(G, w);
+		assert Group.isInGroup(H, elms);
 	}
 
 	public int getG() {return G;}
@@ -33,7 +39,7 @@ public class Bank {
 		
 		users.add(gu);
 		int hu = Group.modPow(gu,w);
-		assert Group.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
+		assert Group.isInGroup(hu, elms): "gu " + gu + ", hu " + hu + ", w " + w;
 		return hu;
 	}
 	
@@ -46,9 +52,9 @@ public class Bank {
 		
 		int v = Group.getRandomExponent();
 		int Hbar = Group.modPow(G, v);
-		assert Group.isInGroup(Hbar);
+		assert Group.isInGroup(Hbar, elms);
 		int hbar = Group.modPow(gu, v);
-		assert Group.isInGroup(hbar);
+		assert Group.isInGroup(hbar, elms);
 		
 		withdrawSession.put(gu,v);
 		
@@ -72,7 +78,7 @@ public class Bank {
 	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
 		checkShopId(pid, shop);
 		
-		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
+		if(!Util.BKVer(G, H, c, sigmaB, elms) && !Util.OTVer(c, pid, sigma, elms)) throw new InvalidCoinException();
 		
 		if(usedCoins.keySet().contains(c)){
 			int otherpid = usedCoins.get(c);
