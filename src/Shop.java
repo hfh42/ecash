@@ -15,7 +15,7 @@ public class Shop {
 		return shopid;
 	}
 	
-	public int getpid(){
+	public int getPid(){
 		transactionCounter++;
 		return shopid+transactionCounter;
 	}

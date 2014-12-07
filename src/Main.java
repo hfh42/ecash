@@ -8,18 +8,22 @@ public class Main {
 		final Bank b = new Bank();
 
 		// Create some users
-		User u1 = new User(225, b);
-/*		User u2 = new User(1337, b);
-		User u3 = new User(23456789, b);*/
-        final ArrayList<User> users = new ArrayList<User>();
-        users.add(u1); //users.add(u2); users.add(u3);
+		User u1 = new User(Util.modPow(Parameters.g1,225), b);
+		User u2 = new User(Util.modPow(Parameters.g1,42), b);
+		User u3 = new User(Util.modPow(Parameters.g1,24), b);
+        final ArrayList<InterfaceUser> users = new ArrayList<InterfaceUser>();
+        users.add(new InterfaceUser("User 1", u1));
+        users.add(new InterfaceUser("User 2", u2));
+        users.add(new InterfaceUser("User 3", u3));
 
 		// Create a few shops
 		Shop s1 = new Shop(22, b);
 		Shop s2 = new Shop(37, b);
 		Shop s3 = new Shop(42, b);
-        final ArrayList<Shop> shops = new ArrayList<Shop>();
-        shops.add(s1); shops.add(s2); shops.add(s3);
+        final ArrayList<InterfaceShop> shops = new ArrayList<InterfaceShop>();
+        shops.add(new InterfaceShop("Shop 1", s1));
+        shops.add(new InterfaceShop("Shop 2", s2));
+        shops.add(new InterfaceShop("Shop 3", s3));
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();
@@ -43,7 +47,7 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new GUIInterface(b, users, shops);
+                new GUIInterface(new InterfaceBank("The Bank", b), users, shops);
             }
         });
 	}
