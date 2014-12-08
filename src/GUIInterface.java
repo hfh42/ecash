@@ -14,13 +14,20 @@ import java.util.HashMap;
  * Created by Randi on 05-12-2014.
  */
 public class GUIInterface {
+    // The data classes used in the interface
     private ArrayList<InterfaceUser> users;
     private ArrayList<InterfaceShop> shops;
     private InterfaceBank bank;
 
+   // Top level window
     private JFrame window;
+    // Status message area in the center of the application
     private JTextArea messages;
+
+    // Panels for the users and shops in the right and left sides
     private JPanel userPanel, shopPanel;
+
+    // Label for bank status in the bottom of the window
     private JLabel bankLabel;
 
     public GUIInterface(InterfaceBank b, ArrayList<InterfaceUser> u, ArrayList<InterfaceShop> s) {
@@ -31,12 +38,14 @@ public class GUIInterface {
         window = new JFrame("eCash GUI");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Add a content pane with a title in the top part
         JPanel contentPane = new JPanel(new BorderLayout());
         JLabel label = new JLabel("eCash System");
         label.setBorder(new EmptyBorder(10, 10, 10, 10));
         label.setHorizontalAlignment(JLabel.CENTER);
         contentPane.add(label, BorderLayout.PAGE_START);
 
+        // Add a user panel to store users and buttons for user actions
         userPanel = new JPanel(new GridBagLayout());
         contentPane.add(userPanel, BorderLayout.LINE_START);
 
@@ -54,6 +63,7 @@ public class GUIInterface {
             addUser(user);
         }
 
+        // Add a shop panel to store shops and buttons for shop actions
         shopPanel = new JPanel(new GridBagLayout());
         contentPane.add(shopPanel, BorderLayout.LINE_END);
 
@@ -66,6 +76,7 @@ public class GUIInterface {
             addShop(shop);
         }
 
+        // Add the message area in the middle
         messages = new JTextArea();
         messages.setEditable(false);
         messages.setColumns(50);
@@ -75,6 +86,7 @@ public class GUIInterface {
         messages.setAutoscrolls(true);
         contentPane.add(messages, BorderLayout.CENTER);
 
+        // Add the bank label in the bottom of the window
         bankLabel = new JLabel(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
         bankLabel.setHorizontalAlignment(JLabel.CENTER);
         bankLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -85,52 +97,68 @@ public class GUIInterface {
         window.setVisible(true);
     }
 
+    // Update the text in the bank label
     private void updateBank() {
         bankLabel.setText(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
     }
 
+    // Used to fetch a user label to update current coins
     private HashMap<InterfaceUser,JLabel> userLabels = new HashMap<InterfaceUser,JLabel>();
+
+    // Add a user to the user panel
     private void addUser(InterfaceUser user) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 10, 10, 10);
         c.anchor = GridBagConstraints.NORTH;
         c.weighty = 1;
-        bank.increaseRegisteredUsers();
         c.gridx = 0;
+
+        bank.increaseRegisteredUsers();
+
         JLabel userLabel = new JLabel(user.getDisplayName() + " (coins: " + user.getCurrentCoins() + ")");
         userLabels.put(user, userLabel);
         userPanel.add(userLabel, c);
+
         JButton userWithdraw = new JButton("Withdraw");
         JButton userSpend = new JButton("Spend");
         userWithdraw.addActionListener(new WithdrawAction(user));
         userSpend.addActionListener(new SpendAction(user));
+
         c.gridx = 1;
         userPanel.add(userWithdraw, c);
         c.gridx = 2;
         userPanel.add(userSpend, c);
     }
 
+    // Update a user label
     private void updateUser(InterfaceUser user) {
         userLabels.get(user).setText(user.getDisplayName() + " (coins: " + user.getCurrentCoins() + ")");
     }
 
+    // Used to fetch a shop label to update sales
     private HashMap<InterfaceShop,JLabel> shopLabels = new HashMap<InterfaceShop, JLabel>();
+
+    // Update a shop label
     private void updateShop(InterfaceShop shop) {
         shopLabels.get(shop).setText(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
     }
 
+    // Add a shop to the shop panel
     private void addShop(InterfaceShop shop) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 10, 10, 10);
         c.anchor = GridBagConstraints.NORTH;
         c.weighty = 1;
         c.gridx = 0;
+
         JLabel shopLabel = new JLabel(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
         shopLabels.put(shop, shopLabel);
-        bank.increaseShops();
         shopPanel.add(shopLabel, c);
+
+        bank.increaseShops();
     }
 
+    // Instantiate a CreateDialog
     private abstract class CreateAction implements ActionListener {
         private String title, message;
         protected CreateDialog dialog;
@@ -147,6 +175,7 @@ public class GUIInterface {
         }
     }
 
+    // Add a user if the CreateDialog was successful
     private class CreateUserAction extends CreateAction {
         public CreateUserAction() { super("Create New User", "Create a new user by entering a name to display and an integer ID."); }
         @Override
@@ -163,6 +192,7 @@ public class GUIInterface {
         }
     }
 
+    // Add a shop if the CreateDialog was successful
     private class CreateShopAction extends CreateAction {
         public CreateShopAction() { super("Create New Shop", "Create a new shop by entering a name to display and an integer ID."); }
         @Override
@@ -179,6 +209,7 @@ public class GUIInterface {
         }
     }
 
+    // Withdraw a coin
     private class WithdrawAction implements ActionListener {
         private InterfaceUser user;
 
@@ -191,6 +222,7 @@ public class GUIInterface {
         }
     }
 
+    // Spend a coin
     private class SpendAction implements ActionListener {
         private InterfaceUser user;
         public SpendAction(InterfaceUser u) {
@@ -224,6 +256,7 @@ public class GUIInterface {
         }
     }
 
+    // Post a formatted message with timestamp to the status area
     private SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
     private void addStatusMessage(String msg) {
         messages.append("[" + format.format(new Date()) + "] " + msg + "\n");
