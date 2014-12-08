@@ -1,13 +1,13 @@
-import exception.*;
 import exception.DoubleDepositException;
 import exception.DoubleSpendingException;
 import exception.InvalidPidException;
 import exception.NoCoinException;
+import exception.InvalidCoinException;
 
 import java.util.LinkedList;
 
 /**
- * Created by Gamer PRO on 12/8/2014.
+ * Created by Nils Henning on 12/8/2014.
  */
 public class CheatingUser extends User {
     private LinkedList<Coin> spendCoins = new LinkedList<Coin>();
@@ -16,13 +16,13 @@ public class CheatingUser extends User {
         super(U, bank);
     }
 
-    public User spendCoin(Shop shop) throws exception.InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
+    public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
         spendCoins.add(super.coins.getFirst());
         super.spendCoin(shop);
         return this;
     }
 
-    public User spendUsedCoin(Shop shop) throws exception.InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
+    public User spendUsedCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
         if(spendCoins.size() == 0) throw new NoCoinException();
         int pid = shop.getpid();
         Coin c = spendCoins.removeFirst();
