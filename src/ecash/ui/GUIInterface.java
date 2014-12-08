@@ -365,6 +365,8 @@ public class GUIInterface {
                         if(validateUserId() && validateDisplayName()) {
                             optionPane.setInputValue(createButton);
                             dispose();
+                        } else {
+                            optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
                         }
                     } else if (cancelButton.equals(e.getNewValue())) {
                         // "CANCEL" functionality
