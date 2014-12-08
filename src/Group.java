@@ -3,10 +3,10 @@ import java.util.Random;
 
 public class Group {
 
-	public static final int p = 2027; 
-	public static final int q = 1013;  
-	public static final int g1 = 917; 
-	public static final int g2 = 254;
+	public static final int q = 536871311;
+	public static final int p = 1073742623; // p = 2q + 1   
+	public static final int g1 = 48395732; 	// g1^q mod p = 1
+	public static final int g2 = 121017764;	// x = 3938, 	g2 = g1^x mod p,	g2^q mod p = 1
 
 	private static Random rnd = new Random(System.currentTimeMillis());
 
