@@ -1,3 +1,5 @@
+package ecash;
+
 import java.util.ArrayList;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -6,9 +8,9 @@ import java.lang.RuntimeException;
 import java.lang.IllegalArgumentException;
 import java.nio.ByteBuffer;
 
-import signature.bank.BKSig;
-import signature.ot.OTsk;
-import signature.ot.OTvk;
+import ecash.signature.bank.BKSig;
+import ecash.signature.ot.OTsk;
+import ecash.signature.ot.OTvk;
 
 public class Util {
 
@@ -34,7 +36,7 @@ public class Util {
 		
 	
 	/*
-	 * Bank Signature
+	 * ecash.Bank Signature
 	 */
 	
 	public static boolean BKVer(int G, int H, OTvk c, BKSig sigmaB){

@@ -1,3 +1,5 @@
+package ecash;
+
 import java.util.Random;
 
 
@@ -56,12 +58,12 @@ public class Group {
 	 * @return base^exp mod p
 	 */
 	public static int pow(int base, int exp){
-		assert isInGroup(base): "Group.pow, base is not in the group";
-		assert isCorrectExp(exp): "Group.pow, exp is not correct";
+		assert isInGroup(base): "ecash.Group.pow, base is not in the group";
+		assert isCorrectExp(exp): "ecash.Group.pow, exp is not correct";
 		
 		int result = power(base,exp);
 		
-		assert isInGroup(result): "Group.pow gives elm outside group";
+		assert isInGroup(result): "ecash.Group.pow gives elm outside group";
 		
 		return result;
 	}
@@ -82,26 +84,26 @@ public class Group {
 	}
 
 	public static int inverse(int base){
-		assert isInGroup(base): "Group.inverse, base is not in the group";
+		assert isInGroup(base): "ecash.Group.inverse, base is not in the group";
 		int result = power(base, p-2);
-		assert mult(base, result) == 1: "Group.inverse, result is not the inverse";
-		assert isInGroup(result): "Group.inverse gives element outside the group";
+		assert mult(base, result) == 1: "ecash.Group.inverse, result is not the inverse";
+		assert isInGroup(result): "ecash.Group.inverse gives element outside the group";
 		return result;
 	}
 		
 	public static int mult(int x, int y){
-		assert isInGroup(x): "Group.mult, x is not in the group";
-		assert isInGroup(y): "Group.mult, y is not in the group";
+		assert isInGroup(x): "ecash.Group.mult, x is not in the group";
+		assert isInGroup(y): "ecash.Group.mult, y is not in the group";
 		int res = mult(x,y,p);
-		assert isInGroup(res): "Group.mult gives element outside the group";
+		assert isInGroup(res): "ecash.Group.mult gives element outside the group";
 		return res;
 	}
 	
 	public static int expMult(int x, int y){
-		assert isCorrectExp(x): "Group.expMult, x is not a corrct exponent";
-		assert isCorrectExp(y): "Group.expMult, y is not a corrct exponent";
+		assert isCorrectExp(x): "ecash.Group.expMult, x is not a corrct exponent";
+		assert isCorrectExp(y): "ecash.Group.expMult, y is not a corrct exponent";
 		int res = mult(x,y,q);
-		assert isCorrectExp(res): "Group.expMult gives wrong exponent";		
+		assert isCorrectExp(res): "ecash.Group.expMult gives wrong exponent";
 		return res;
 	}
 	
@@ -111,21 +113,21 @@ public class Group {
 	}
 	
 	public static int expAdd(int x, int y){
-		assert isCorrectExp(x): "Group.expAdd, x is not a corrct exponent";
-		assert isCorrectExp(y) || isCorrectExp(-y): "Group.expAdd, y is not a corrct exponent";
+		assert isCorrectExp(x): "ecash.Group.expAdd, x is not a corrct exponent";
+		assert isCorrectExp(y) || isCorrectExp(-y): "ecash.Group.expAdd, y is not a corrct exponent";
 		long a = x, b = y;
 		long result = a + b;
 		while(result < 0){
 			result = result + q; // make sure that the result is positive
 		}
 		int res = (mod((result),q));
-		assert isCorrectExp(res): "Group.expAdd gives wrong exponent";
+		assert isCorrectExp(res): "ecash.Group.expAdd gives wrong exponent";
 		return res;
 	}
 	
 
 	private static int mod(long base, int mod) {
-		assert base >= 0: "Group.mod, base must be positive" ;
+		assert base >= 0: "ecash.Group.mod, base must be positive" ;
 		int r = (int)(base % mod);
 		if(r < 0)
 			r += Math.abs(mod);

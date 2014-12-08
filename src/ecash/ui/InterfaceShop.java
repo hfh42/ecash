@@ -1,3 +1,7 @@
+package ecash.ui;
+
+import ecash.Shop;
+
 /**
  * Created by Randi on 07-12-2014.
  */

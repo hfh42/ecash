@@ -1,4 +1,4 @@
-package signature.bank;
+package ecash.signature.bank;
 import java.util.ArrayList;
 
 
@@ -16,7 +16,7 @@ public class BKSig {
 	}
 	
 	/**
-	 * Gives a list of elements in the signature which should be hashed
+	 * Gives a list of elements in the ecash.signature which should be hashed
 	 * @return list of all fields except z
 	 */
 	public ArrayList<Integer> getList(){

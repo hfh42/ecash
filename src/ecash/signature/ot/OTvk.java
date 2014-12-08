@@ -1,4 +1,4 @@
-package signature.ot;
+package ecash.signature.ot;
 
 public class OTvk {
 	public final int x, a;

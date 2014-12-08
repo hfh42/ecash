@@ -1,14 +1,16 @@
+package ecash;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import signature.bank.BKSig;
-import signature.ot.OTsk;
-import signature.ot.OTvk;
-import exception.DoubleDepositException;
-import exception.DoubleSpendingException;
-import exception.InvalidCoinException;
-import exception.InvalidPidException;
-import exception.NoCoinException;
+import ecash.signature.bank.BKSig;
+import ecash.signature.ot.OTsk;
+import ecash.signature.ot.OTvk;
+import ecash.exception.DoubleDepositException;
+import ecash.exception.DoubleSpendingException;
+import ecash.exception.InvalidCoinException;
+import ecash.exception.InvalidPidException;
+import ecash.exception.NoCoinException;
 
 
 public class User {
@@ -24,8 +26,8 @@ public class User {
 		this.bank = bank;
 		this.U = U;
 		
-		// User registration 
-		int g1U = Group.pow(Group.g1,U);
+		// ecash.User registration
+		int g1U = Group.pow(Group.g1, U);
 		gu = Group.mult(g1U, Group.g2);
 		hu = bank.register(gu);
 	}
@@ -48,7 +50,7 @@ public class User {
 		int gus = x;
 		int hus = Group.pow(hu, s);
 		
-		// Get commitment from Bank, and randomize it
+		// Get commitment from ecash.Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
 		int Gzp = Group.pow(bank.getG(), zp);
 		int Hep = Group.pow(bank.getH(), ep);
@@ -73,12 +75,12 @@ public class User {
 		int e = Group.expAdd(hash,-ep);
 		assert Group.isCorrectExp(e);
 		
-		// Get response from Bank by sending the challenge
+		// Get response from ecash.Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);
 		int sumz = Group.expAdd(z, zp);
 		assert Group.isCorrectExp(sumz);
 		
-		// Compute signature
+		// Compute ecash.signature
 		BKSig sigmaB = new BKSig(bank.getG(), bank.getH(), gus, hus, HbarHbarp, hbarshbarp, sumz);
 		
 		Coin c = new Coin(vk,sk,sigmaB);

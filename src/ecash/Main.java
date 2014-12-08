@@ -1,12 +1,17 @@
+package ecash;
+
 import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.*;
 
-import exception.DoubleDepositException;
-import exception.DoubleSpendingException;
-import exception.InvalidCoinException;
-import exception.InvalidPidException;
-import exception.NoCoinException;
+import ecash.exception.DoubleDepositException;
+import ecash.exception.DoubleSpendingException;
+import ecash.exception.InvalidCoinException;
+import ecash.exception.InvalidPidException;
+import ecash.exception.NoCoinException;
+import ecash.ui.GUIInterface;
+import ecash.ui.InterfaceBank;
+import ecash.ui.InterfaceShop;
+import ecash.ui.InterfaceUser;
 
 public class Main {
 

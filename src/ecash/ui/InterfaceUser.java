@@ -1,4 +1,7 @@
-import exception.*;
+package ecash.ui;
+
+import ecash.User;
+import ecash.exception.*;
 /**
  * Created by Randi on 07-12-2014.
  */

@@ -1,14 +1,15 @@
+package ecash;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import signature.bank.BKSig;
-import signature.ot.OTvk;
-import exception.DoubleDepositException;
-import exception.DoubleSpendingException;
-import exception.InvalidCoinException;
-import exception.InvalidPidException;
+import ecash.signature.bank.BKSig;
+import ecash.signature.ot.OTvk;
+import ecash.exception.DoubleDepositException;
+import ecash.exception.DoubleSpendingException;
+import ecash.exception.InvalidCoinException;
+import ecash.exception.InvalidPidException;
 
 
 public class Bank {
@@ -34,14 +35,14 @@ public class Bank {
 
 	
 	/*
-	 * User Registration
+	 * ecash.User Registration
 	 */
 
 	public int register(int gu){
-		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
+		if(isRegisteredUser(gu)) throw new IllegalArgumentException("ecash.User allready registered");
 		
 		users.add(gu);
-		int hu = Group.pow(gu,w);
+		int hu = Group.pow(gu, w);
 		return hu;
 	}
 	

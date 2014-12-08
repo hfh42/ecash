@@ -1,9 +1,11 @@
-import signature.bank.BKSig;
-import signature.ot.OTvk;
-import exception.DoubleDepositException;
-import exception.DoubleSpendingException;
-import exception.InvalidCoinException;
-import exception.InvalidPidException;
+package ecash;
+
+import ecash.signature.bank.BKSig;
+import ecash.signature.ot.OTvk;
+import ecash.exception.DoubleDepositException;
+import ecash.exception.DoubleSpendingException;
+import ecash.exception.InvalidCoinException;
+import ecash.exception.InvalidPidException;
 
 
 public class Shop {

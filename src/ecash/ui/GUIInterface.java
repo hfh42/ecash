@@ -1,4 +1,8 @@
-import exception.*;
+package ecash.ui;
+
+import ecash.Shop;
+import ecash.User;
+import ecash.exception.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -86,7 +90,8 @@ public class GUIInterface {
         addStatusMessage("Welcome to the eCash System");
         addStatusMessage("Use the buttons in the interface to navigate the system.");
         messages.setAutoscrolls(true);
-        contentPane.add(messages, BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(messages, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        contentPane.add(scroll, BorderLayout.CENTER);
 
         // Add the bank label in the bottom of the window
         bankLabel = new JLabel(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
