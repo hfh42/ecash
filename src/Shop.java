@@ -1,3 +1,10 @@
+import signature.bank.BKSig;
+import signature.ot.OTvk;
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
+
 
 public class Shop {
 	
@@ -5,9 +12,9 @@ public class Shop {
 	private int transactionCounter = 0;
 	
 	private Bank bank;
-
+	
 	public Shop(int id, Bank bank){
-		this.shopid = id*1000000;
+		this.shopid = id*10;
 		this.bank = bank;
 	}
 	

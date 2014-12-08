@@ -1,6 +1,14 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import signature.bank.BKSig;
+import signature.ot.OTvk;
+import exception.DoubleDepositException;
+import exception.DoubleSpendingException;
+import exception.InvalidCoinException;
+import exception.InvalidPidException;
 
 
 public class Bank {
@@ -14,10 +22,11 @@ public class Bank {
 	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
+	
 	public Bank(){
-		G = Util.getRandomGroup();
-		w = Util.getRandomExp();
-		H = Util.modPow(G, w);
+		G = Group.getRandomGroupElement();
+		w = Group.getRandomExponent();
+		H = Group.pow(G, w);
 	}
 
 	public int getG() {return G;}
@@ -32,8 +41,7 @@ public class Bank {
 		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User allready registered");
 		
 		users.add(gu);
-		int hu = Util.modPow(gu,w);
-		assert Util.isInGroup(hu): "gu " + gu + ", hu " + hu + ", w " + w;
+		int hu = Group.pow(gu,w);
 		return hu;
 	}
 	
@@ -44,11 +52,9 @@ public class Bank {
 	public Pair withdrawCommit(int gu){
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user"); 
 		
-		int v = Util.getRandomExp();
-		int Hbar = Util.modPow(G, v);
-		assert Util.isInGroup(Hbar);
-		int hbar = Util.modPow(gu, v);
-		assert Util.isInGroup(hbar);
+		int v = Group.getRandomExponent();
+		int Hbar = Group.pow(G, v);
+		int hbar = Group.pow(gu, v);
 		
 		withdrawSession.put(gu,v);
 		
@@ -59,8 +65,8 @@ public class Bank {
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
 		
 		int v = withdrawSession.remove(gu);		
-		int z = Util.addE(Util.multE(e, w), v);
-		assert z < Parameters.q && z > 0;
+		int z = Group.expAdd(Group.expMult(e, w), v);
+		assert Group.isCorrectExp(z): "z " + z;
 		
 		return z;
 	}
