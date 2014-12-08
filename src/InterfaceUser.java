@@ -11,8 +11,16 @@ public class InterfaceUser {
         user = u;
     }
 
-    public User getUser() {
-        return user;
+    public void withdraw() {
+        user.withdraw();
+        increaseCurrentCoins();
+    }
+
+    public void spendCoin(InterfaceShop shop, InterfaceBank bank) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException  {
+        user.spendCoin(shop.getShop());
+        decreaseCurrentCoins();
+        shop.increaseSales();
+        bank.increaseDeposits();
     }
 
     public String getDisplayName() {

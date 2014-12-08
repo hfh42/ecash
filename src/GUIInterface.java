@@ -8,6 +8,7 @@ import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Randi on 05-12-2014.
@@ -86,9 +87,9 @@ public class GUIInterface {
 
     private void updateBank() {
         bankLabel.setText(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
-        bankLabel.repaint();
     }
 
+    private HashMap<InterfaceUser,JLabel> userLabels = new HashMap<InterfaceUser,JLabel>();
     private void addUser(InterfaceUser user) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 10, 10, 10);
@@ -97,14 +98,25 @@ public class GUIInterface {
         bank.increaseRegisteredUsers();
         c.gridx = 0;
         JLabel userLabel = new JLabel(user.getDisplayName() + " (coins: " + user.getCurrentCoins() + ")");
+        userLabels.put(user, userLabel);
         userPanel.add(userLabel, c);
         JButton userWithdraw = new JButton("Withdraw");
         JButton userSpend = new JButton("Spend");
-        // TODO: add click handlers
+        userWithdraw.addActionListener(new WithdrawAction(user));
+        userSpend.addActionListener(new SpendAction(user));
         c.gridx = 1;
         userPanel.add(userWithdraw, c);
         c.gridx = 2;
         userPanel.add(userSpend, c);
+    }
+
+    private void updateUser(InterfaceUser user) {
+        userLabels.get(user).setText(user.getDisplayName() + " (coins: " + user.getCurrentCoins() + ")");
+    }
+
+    private HashMap<InterfaceShop,JLabel> shopLabels = new HashMap<InterfaceShop, JLabel>();
+    private void updateShop(InterfaceShop shop) {
+        shopLabels.get(shop).setText(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
     }
 
     private void addShop(InterfaceShop shop) {
@@ -114,6 +126,8 @@ public class GUIInterface {
         c.weighty = 1;
         c.gridx = 0;
         JLabel shopLabel = new JLabel(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
+        shopLabels.put(shop, shopLabel);
+        bank.increaseShops();
         shopPanel.add(shopLabel, c);
     }
 
@@ -161,6 +175,51 @@ public class GUIInterface {
                 shopPanel.repaint();
                 updateBank();
                 addStatusMessage("New shop created with name '" + dialog.getDisplayName() + "'.");
+            }
+        }
+    }
+
+    private class WithdrawAction implements ActionListener {
+        private InterfaceUser user;
+
+        public WithdrawAction(InterfaceUser u) {
+            user = u;
+        }
+        public void actionPerformed(ActionEvent e) {
+            user.withdraw();
+            updateUser(user);
+        }
+    }
+
+    private class SpendAction implements ActionListener {
+        private InterfaceUser user;
+        public SpendAction(InterfaceUser u) {
+            user = u;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            InterfaceShop shop = (InterfaceShop)JOptionPane.showInputDialog(window, "Choose the shop you want to buy from:", "Spend a Coin", JOptionPane.PLAIN_MESSAGE, null, shops.toArray(), null);
+            if(shop == null) return;
+
+            try {
+                user.spendCoin(shop, bank);
+                updateUser(user);
+                updateShop(shop);
+                updateBank();
+                addStatusMessage(user.getDisplayName() + " spent a coin in " + shop.getDisplayName());
+            } catch(InvalidCoinException ex) {
+                user.decreaseCurrentCoins();
+                updateUser(user);
+                addStatusMessage(user.getDisplayName() + " tried to use an invalid coin in " + shop.getDisplayName());
+            } catch(InvalidPidException ex) {
+                addStatusMessage(user.getDisplayName() + " got an invalid pid from " + shop.getDisplayName());
+            } catch(NoCoinException ex) {
+                addStatusMessage(user.getDisplayName() + " have no coins left. Withdraw another and try to buy again.");
+            } catch(DoubleDepositException ex) {
+                addStatusMessage(shop.getDisplayName() + " tried to deposit the same coin twice.");
+            } catch(DoubleSpendingException ex) {
+                addStatusMessage(user.getDisplayName() + " tried to spend the same coin twice.");
+                // TODO: compute and display U for the cheating user
             }
         }
     }

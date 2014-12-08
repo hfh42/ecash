@@ -19,7 +19,16 @@ public class InterfaceShop {
         sales++;
     }
 
+    public Shop getShop() {
+        return shop;
+    }
+
     public int getSales() {
         return sales;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
     }
 }
