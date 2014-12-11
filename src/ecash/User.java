@@ -50,7 +50,7 @@ public class User {
 		int gus = x;
 		int hus = Group.pow(hu, s);
 		
-		// Get commitment from ecash.Bank, and randomize it
+		// Get commitment from Bank, and randomize it
 		Pair pairHbarhbar = bank.withdrawCommit(gu);
 		int Gzp = Group.pow(bank.getG(), zp);
 		int Hep = Group.pow(bank.getH(), ep);

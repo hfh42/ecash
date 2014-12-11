@@ -23,7 +23,6 @@ public class Bank {
 	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
-	
 	public Bank(){
 		G = Group.getRandomGroupElement();
 		w = Group.getRandomExponent();
@@ -35,14 +34,15 @@ public class Bank {
 
 	
 	/*
-	 * ecash.User Registration
+	 * User Registration
 	 */
 
 	public int register(int gu){
-		if(isRegisteredUser(gu)) throw new IllegalArgumentException("ecash.User allready registered");
+		if(isRegisteredUser(gu)) throw new IllegalArgumentException("User already registered");
 		
 		users.add(gu);
 		int hu = Group.pow(gu, w);
+
 		return hu;
 	}
 	
