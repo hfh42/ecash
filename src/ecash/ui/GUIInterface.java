@@ -1,5 +1,6 @@
 package ecash.ui;
 
+import ecash.CheatingUser;
 import ecash.Shop;
 import ecash.User;
 import ecash.exception.*;
@@ -47,7 +48,7 @@ public class GUIInterface {
         // Add a content pane with a title in the top part
         JPanel contentPane = new JPanel(new BorderLayout());
         JLabel label = new JLabel("eCash System");
-        label.setBorder(new EmptyBorder(10, 10, 10, 10));
+        label.setBorder(new EmptyBorder(5, 5, 5, 5));
         label.setHorizontalAlignment(JLabel.CENTER);
         contentPane.add(label, BorderLayout.PAGE_START);
 
@@ -56,7 +57,7 @@ public class GUIInterface {
         contentPane.add(userPanel, BorderLayout.LINE_START);
 
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(10, 10, 10, 10);
+        c.insets = new Insets(5, 5, 5, 5);
         c.anchor = GridBagConstraints.NORTH;
         c.weighty = 1;
 
@@ -96,7 +97,7 @@ public class GUIInterface {
         // Add the bank label in the bottom of the window
         bankLabel = new JLabel(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
         bankLabel.setHorizontalAlignment(JLabel.CENTER);
-        bankLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        bankLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.add(bankLabel, BorderLayout.PAGE_END);
 
         window.getContentPane().add(contentPane);
@@ -115,7 +116,7 @@ public class GUIInterface {
     // Add a user to the user panel
     private void addUser(InterfaceUser user) {
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(10, 10, 10, 10);
+        c.insets = new Insets(5, 5, 5, 5);
         c.anchor = GridBagConstraints.NORTHWEST;
         c.weighty = 1;
         c.gridx = 0;
@@ -164,7 +165,7 @@ public class GUIInterface {
     // Add a shop to the shop panel
     private void addShop(InterfaceShop shop) {
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(10, 10, 10, 10);
+        c.insets = new Insets(5, 5, 5, 5);
         c.anchor = GridBagConstraints.NORTH;
         c.weighty = 1;
         c.gridx = 0;
@@ -200,7 +201,11 @@ public class GUIInterface {
         public void actionPerformed(ActionEvent e) {
             super.actionPerformed(e);
             if(!JOptionPane.UNINITIALIZED_VALUE.equals(dialog.getInputValue())) {
-                InterfaceUser newUser = new InterfaceUser(dialog.getDisplayName(), new User(dialog.getId(), bank.getBank()));
+                InterfaceUser newUser;
+                if(dialog.getCheat())
+                    newUser = new InterfaceCheatingUser(dialog.getDisplayName(), new CheatingUser(dialog.getId(), bank.getBank()));
+                else
+                    newUser = new InterfaceUser(dialog.getDisplayName(), new User(dialog.getId(), bank.getBank()));
                 users.add(newUser);
                 addUser(newUser);
                 userPanel.repaint();
@@ -303,8 +308,10 @@ public class GUIInterface {
 
     private class CreateDialog extends JDialog implements ActionListener, PropertyChangeListener {
         private JTextField idField, displayNameField;
+        private JCheckBox cheatField;
         private int id = 0;
         private String displayName;
+        private boolean cheat = false;
         private JOptionPane optionPane;
 
         private String createButton = "Create";
@@ -317,8 +324,10 @@ public class GUIInterface {
 
             idField = new JTextField(10);
             displayNameField = new JTextField(10);
+            cheatField = new JCheckBox();
             JLabel idLabel = new JLabel("ID: "), nameLabel = new JLabel("Name: ");
-            Object[] content = {message, idLabel, idField, nameLabel, displayNameField};
+            JLabel cheatLabel = new JLabel("Cheat: ");
+            Object[] content = {message, idLabel, idField, nameLabel, displayNameField, cheatLabel, cheatField};
             Object[] options = {createButton, cancelButton};
 
             optionPane = new JOptionPane(content, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION, null, options, options[0]);
@@ -329,6 +338,7 @@ public class GUIInterface {
 
             idField.addActionListener(this);
             displayNameField.addActionListener(this);
+            cheatField.addActionListener(this);
 
             optionPane.addPropertyChangeListener(this);
         }
@@ -340,6 +350,8 @@ public class GUIInterface {
         public int getId() {
             return id;
         }
+
+        public boolean getCheat() { return cheat; }
 
         public Object getInputValue() {
             return optionPane.getInputValue();
@@ -416,6 +428,9 @@ public class GUIInterface {
                         validateUserId();
                     } else if (displayNameField == value) {
                         validateDisplayName();
+                    } else if (cheatField == value) {
+                        cheat = cheatField.isSelected();
+                        optionPane.setInputValue(JOptionPane.UNINITIALIZED_VALUE);
                     }
                 }
             }
