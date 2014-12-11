@@ -33,7 +33,7 @@ public class Main {
         final ArrayList<InterfaceShop> shops = new ArrayList<InterfaceShop>();
         shops.add(new InterfaceShop("Shop 1", s1));
         shops.add(new InterfaceShop("Shop 2", s2));
-        shops.add(new InterfaceShop("Shop 3", s3));
+        shops.add(new InterfaceCheatingShop("Shop 3", s3));
 
 		// Withdraw coins for different users
 		u1.withdraw().withdraw();

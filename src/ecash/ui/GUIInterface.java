@@ -1,5 +1,6 @@
 package ecash.ui;
 
+import ecash.CheatingShop;
 import ecash.CheatingUser;
 import ecash.Shop;
 import ecash.User;
@@ -77,6 +78,7 @@ public class GUIInterface {
         JButton shopCreate = new JButton("Create Shop");
         shopCreate.addActionListener(new CreateShopAction());
         c.gridx = GridBagConstraints.RELATIVE;
+        c.gridwidth = 2;
         shopPanel.add(shopCreate, c);
 
         for(InterfaceShop shop : shops) {
@@ -166,13 +168,24 @@ public class GUIInterface {
     private void addShop(InterfaceShop shop) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
-        c.anchor = GridBagConstraints.NORTH;
+        c.anchor = GridBagConstraints.NORTHEAST;
         c.weighty = 1;
         c.gridx = 0;
 
         JLabel shopLabel = new JLabel(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
         shopLabels.put(shop, shopLabel);
-        shopPanel.add(shopLabel, c);
+
+        if(!(shop instanceof InterfaceCheatingShop)) {
+            c.gridwidth = 2;
+            shopPanel.add(shopLabel, c);
+        } else {
+            JButton depositCheat = new JButton("Cheat Deposit");
+            depositCheat.addActionListener(new DepositAction((InterfaceCheatingShop)shop));
+            shopPanel.add(depositCheat, c);
+
+            c.gridx = 1;
+            shopPanel.add(shopLabel, c);
+        }
 
         bank.increaseShops();
     }
@@ -222,7 +235,11 @@ public class GUIInterface {
         public void actionPerformed(ActionEvent e) {
             super.actionPerformed(e);
             if(!JOptionPane.UNINITIALIZED_VALUE.equals(dialog.getInputValue())) {
-                InterfaceShop newShop = new InterfaceShop(dialog.getDisplayName(), new Shop(dialog.getId(), bank.getBank()));
+                InterfaceShop newShop;
+                if(dialog.getCheat())
+                    newShop = new InterfaceCheatingShop(dialog.getDisplayName(), new CheatingShop(dialog.getId(), bank.getBank()));
+                else
+                    newShop = new InterfaceShop(dialog.getDisplayName(), new Shop(dialog.getId(), bank.getBank()));
                 shops.add(newShop);
                 addShop(newShop);
                 shopPanel.repaint();
@@ -296,6 +313,26 @@ public class GUIInterface {
             } catch(DoubleSpendingException ex) {
                 addStatusMessage(user.getDisplayName() + " tried to spend the same coin twice.");
                 // TODO: compute and display U for the cheating user
+            }
+        }
+    }
+
+    private class DepositAction implements ActionListener {
+        private InterfaceCheatingShop shop;
+        public DepositAction(InterfaceCheatingShop s) {
+            shop = s;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                shop.depositCoinAgain();
+            } catch(InvalidCoinException | InvalidPidException | DoubleSpendingException ex) {
+                addStatusMessage("Unexpected exception in deposit...");
+            } catch(NoCoinException ex) {
+                addStatusMessage(shop.getDisplayName() + " tried to redeposit but have no coins yet.");
+            } catch(DoubleDepositException ex) {
+                addStatusMessage(shop.getDisplayName() + " tried to deposit the same coin twice.");
             }
         }
     }
