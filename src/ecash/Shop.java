@@ -13,7 +13,7 @@ public class Shop {
 	private final int shopid;
 	private int transactionCounter = 0;
 	
-	private Bank bank;
+	protected Bank bank;
 	
 	public Shop(int id, Bank bank){
 		this.shopid = id*10;
