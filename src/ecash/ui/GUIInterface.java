@@ -62,7 +62,7 @@ public class GUIInterface {
 
         JButton userCreate = new JButton("Create User");
         userCreate.addActionListener(new CreateUserAction());
-        c.gridwidth = 3;
+        c.gridwidth = 4;
         userPanel.add(userCreate, c);
 
         for(InterfaceUser user : users) {
@@ -116,7 +116,7 @@ public class GUIInterface {
     private void addUser(InterfaceUser user) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 10, 10, 10);
-        c.anchor = GridBagConstraints.NORTH;
+        c.anchor = GridBagConstraints.NORTHWEST;
         c.weighty = 1;
         c.gridx = 0;
 
@@ -129,12 +129,23 @@ public class GUIInterface {
         JButton userWithdraw = new JButton("Withdraw");
         JButton userSpend = new JButton("Spend");
         userWithdraw.addActionListener(new WithdrawAction(user));
-        userSpend.addActionListener(new SpendAction(user));
+        userSpend.addActionListener(new SpendAction(user, new HonestSpend()));
 
         c.gridx = 1;
         userPanel.add(userWithdraw, c);
         c.gridx = 2;
-        userPanel.add(userSpend, c);
+
+        if(!(user instanceof InterfaceCheatingUser)) {
+            c.gridwidth = 2;
+            userPanel.add(userSpend, c);
+        } else {
+            userPanel.add(userSpend, c);
+            JButton userCheat = new JButton("Cheat Spend");
+            userCheat.addActionListener(new SpendAction(user, new CheatingSpend()));
+
+            c.gridx = 3;
+            userPanel.add(userCheat, c);
+        }
     }
 
     // Update a user label
@@ -229,11 +240,32 @@ public class GUIInterface {
         }
     }
 
+    private interface SpendStrategy {
+        public void spend(InterfaceUser user, InterfaceShop shop, InterfaceBank bank) throws NoCoinException, InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException;
+    }
+
+    private class HonestSpend implements SpendStrategy {
+        public void spend(InterfaceUser user, InterfaceShop shop, InterfaceBank bank) throws NoCoinException, InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException {
+            user.spendCoin(shop, bank);
+        }
+    }
+
+    private class CheatingSpend implements SpendStrategy {
+        public void spend(InterfaceUser user, InterfaceShop shop, InterfaceBank bank) throws NoCoinException, InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException {
+            if(user instanceof InterfaceCheatingUser) {
+                ((InterfaceCheatingUser)user).spendUsedCoin(shop, bank);
+            } else
+                throw new IllegalArgumentException("Cannot cheat spend without a cheating user");
+        }
+    }
+
     // Spend a coin
     private class SpendAction implements ActionListener {
         private InterfaceUser user;
-        public SpendAction(InterfaceUser u) {
+        private SpendStrategy strategy;
+        public SpendAction(InterfaceUser u, SpendStrategy s) {
             user = u;
+            strategy = s;
         }
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -241,7 +273,7 @@ public class GUIInterface {
             if(shop == null) return;
 
             try {
-                user.spendCoin(shop, bank);
+                strategy.spend(user, shop, bank);
                 updateUser(user);
                 updateShop(shop);
                 updateBank();

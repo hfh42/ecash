@@ -8,10 +8,7 @@ import ecash.exception.DoubleSpendingException;
 import ecash.exception.InvalidCoinException;
 import ecash.exception.InvalidPidException;
 import ecash.exception.NoCoinException;
-import ecash.ui.GUIInterface;
-import ecash.ui.InterfaceBank;
-import ecash.ui.InterfaceShop;
-import ecash.ui.InterfaceUser;
+import ecash.ui.*;
 
 public class Main {
 
@@ -27,6 +24,7 @@ public class Main {
         users.add(new InterfaceUser("User 1", u1));
         users.add(new InterfaceUser("User 2", u2));
         users.add(new InterfaceUser("User 3", u3));
+        users.add(new InterfaceCheatingUser("Cheater 1", cu1));
 
 		// Create a few shops
 		Shop s1 = new Shop(22, b);
