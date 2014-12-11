@@ -19,7 +19,7 @@ public class User {
 	private int gu,hu;
 	private int U;
 	
-	private LinkedList<Coin> coins = new LinkedList<Coin>();
+	protected LinkedList<Coin> coins = new LinkedList<Coin>();
 	
 	
 	public User(int U, Bank bank){
@@ -100,7 +100,7 @@ public class User {
 	}	
 	
 	
-	private class Coin{
+	protected class Coin{
 		public final OTvk vk;
 		public final OTsk sk;
 		public final BKSig sigmaB;

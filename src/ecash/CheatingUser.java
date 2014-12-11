@@ -1,8 +1,13 @@
-import exception.DoubleDepositException;
-import exception.DoubleSpendingException;
-import exception.InvalidPidException;
-import exception.NoCoinException;
-import exception.InvalidCoinException;
+package ecash;
+
+import ecash.Bank;
+import ecash.Shop;
+import ecash.User;
+import ecash.exception.DoubleDepositException;
+import ecash.exception.DoubleSpendingException;
+import ecash.exception.InvalidPidException;
+import ecash.exception.NoCoinException;
+import ecash.exception.InvalidCoinException;
 
 import java.util.LinkedList;
 
@@ -24,7 +29,7 @@ public class CheatingUser extends User {
 
     public User spendUsedCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
         if(spendCoins.size() == 0) throw new NoCoinException();
-        int pid = shop.getpid();
+        int pid = shop.getPid();
         Coin c = spendCoins.removeFirst();
         Pair sigma = Util.OTSign(c.sk, pid);
         shop.buy(c.vk, c.sigmaB, sigma, pid);

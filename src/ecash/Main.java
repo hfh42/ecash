@@ -22,6 +22,7 @@ public class Main {
         User u1 = new User(225, b);
         User u2 = new User(337, b);
         User u3 = new User(789, b);
+        CheatingUser cu1 = new CheatingUser(5035,b);
         final ArrayList<InterfaceUser> users = new ArrayList<InterfaceUser>();
         users.add(new InterfaceUser("User 1", u1));
         users.add(new InterfaceUser("User 2", u2));
@@ -40,7 +41,7 @@ public class Main {
 		u1.withdraw().withdraw();
 		u3.withdraw();
 		u2.withdraw().withdraw().withdraw();
-
+        cu1.withdraw();
 		// Spend the coins we just withdrawn
 		trySpendCoin(u1, s1, "Spent coin for u1 in s1");
 		trySpendCoin(u1, s2, "Spent coin for u1 in s2");
@@ -50,9 +51,12 @@ public class Main {
 		trySpendCoin(u2, s3, "Spent coin for u2 in s1");
 
 		trySpendCoin(u3, s2, "Spent coin for u3 in s2");
+        trySpendCoin(cu1, s2, "Spent coin for cu1 in s2");
 
 		// Try to spend a coin without withdrawing first
 		trySpendCoin(u3, s1, "Spent coin for u3 in s1");
+        //Try to spend a coin twice
+        trySpendCoinTwice(cu1,s2,"spend spend coin for cu1 in s2");
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -77,5 +81,22 @@ public class Main {
 			System.out.println("Tried to spend the same coin twice");
 		}
 	}
+
+    private static void trySpendCoinTwice(CheatingUser u, Shop s, String m) {
+        try {
+            u.spendUsedCoin(s);
+            System.out.println(m);
+        } catch(InvalidCoinException e) {
+            System.out.println("Tried to spend an invalid coin");
+        } catch(InvalidPidException e) {
+            System.out.println("Contacted shop with an invalid transaction ID");
+        } catch(NoCoinException e) {
+            System.out.println("Tried to spend a coin with no coins withdrawn");
+        } catch(DoubleDepositException e) {
+            System.out.println("Tried to deposit the same transaction twice");
+        } catch(DoubleSpendingException e) {
+            System.out.println("Tried to spend the same coin twice");
+        }
+    }
 
 }
