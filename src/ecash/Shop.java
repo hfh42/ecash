@@ -10,7 +10,7 @@ import ecash.exception.InvalidPidException;
 
 public class Shop {
 	
-	private final int shopid;
+	protected final int shopid;
 	private int transactionCounter = 0;
 	
 	protected Bank bank;
@@ -39,7 +39,7 @@ public class Shop {
 			throw new InvalidCoinException();
 		}
 		
-		bank.deposit(c,sigmaB,sigma,pid, this);
+		bank.deposit(c,sigmaB,sigma,pid, shopid);
 	}
 	
 	private boolean isValidPid(int pid){

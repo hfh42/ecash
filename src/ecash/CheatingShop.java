@@ -31,6 +31,6 @@ public class CheatingShop extends Shop {
 
     public void depositCoinAgain() throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException, NoCoinException {
         if(coinList.size() == 0) throw new NoCoinException();
-        bank.deposit(coinList.get(0),sigmaBList.get(0),sigmaList.get(0),pidList.get(0), this);
+        bank.deposit(coinList.get(0),sigmaBList.get(0),sigmaList.get(0),pidList.get(0), shopid);
     }
 }

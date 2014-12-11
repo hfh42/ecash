@@ -76,8 +76,8 @@ public class Bank {
 	 * Deposit
 	 */
 	
-	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, Shop shop) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
-		checkShopId(pid, shop);
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, int shopID) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
+		checkShopId(pid, shopID);
 		
 		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
@@ -91,10 +91,10 @@ public class Bank {
 		usedPids.add(pid);
 	}
 	
-	private void checkShopId(int pid, Shop shop) throws DoubleDepositException, InvalidPidException{
+	private void checkShopId(int pid, int shopID) throws DoubleDepositException, InvalidPidException{
 		if(usedPids.contains(pid)) throw new DoubleDepositException();
 		
-		int id = pid - shop.getShopId();
+		int id = pid - shopID;
 		if(0 > id || id > 100000) throw new InvalidPidException();
 	}
 	
