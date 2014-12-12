@@ -311,8 +311,8 @@ public class GUIInterface {
             } catch(DoubleDepositException ex) {
                 addStatusMessage(shop.getDisplayName() + " tried to deposit the same coin twice.");
             } catch(DoubleSpendingException ex) {
-                addStatusMessage(user.getDisplayName() + " tried to spend the same coin twice.");
-                // TODO: compute and display U for the cheating user
+                addStatusMessage(user.getDisplayName() + " with private id "+ ex.U + " tried to spend the same coin twice.");
+
             }
         }
     }

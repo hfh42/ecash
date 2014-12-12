@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ecash.exception.*;
 import ecash.signature.bank.BKSig;
 import ecash.signature.ot.OTvk;
-import ecash.exception.DoubleDepositException;
-import ecash.exception.DoubleSpendingException;
-import ecash.exception.InvalidCoinException;
-import ecash.exception.InvalidPidException;
 
 
 public class Bank {
@@ -20,7 +17,7 @@ public class Bank {
 	
 	private Map<Integer,Integer> withdrawSession = new HashMap<Integer,Integer>();
 	
-	private Map<OTvk,Integer> usedCoins = new HashMap<OTvk,Integer>();
+	private Map<OTvk,Transaction> usedCoins = new HashMap<OTvk,Transaction>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
 	
 	public Bank(){
@@ -76,18 +73,24 @@ public class Bank {
 	 * Deposit
 	 */
 	
-	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, int shopID) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, int shopID) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException {
 		checkShopId(pid, shopID);
 		
 		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
 		if(usedCoins.keySet().contains(c)){
-			int otherpid = usedCoins.get(c);
-			// TODO: Find cheating user
-			throw new DoubleSpendingException();
+			Transaction t = usedCoins.get(c);
+			int w1p = Group.expDiv(Group.expAdd(t.sigma.x1, -sigma.x1), Group.expAdd(t.pid, -pid));
+            int w2p = Group.expDiv(Group.expAdd(t.sigma.x2,-sigma.x2),Group.expAdd(t.pid,-pid));
+            int U = Group.expDiv(w1p,w2p);
+            int gu = Group.mult(Group.pow(Group.g1, U), Group.g2);
+            if(users.contains(gu))
+			    throw new DoubleSpendingException(gu,U);
+            else
+                throw new ErrorCalculation();
 		}
 		
-		usedCoins.put(c,pid); // TODO: save c, sigma, pid
+		usedCoins.put(c,new Transaction(sigma,pid));
 		usedPids.add(pid);
 	}
 	
@@ -101,7 +104,16 @@ public class Bank {
 	/*
 	 *	Helpers 
 	 */
-	
+
+    private class Transaction{
+        public final Pair sigma;
+        public final int pid;
+        public Transaction(Pair sigma, int pid)
+        {
+            this.sigma=sigma;
+            this.pid = pid;
+        }
+    }
 	
 			
 	private boolean isRegisteredUser(int gu){
