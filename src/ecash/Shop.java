@@ -10,23 +10,20 @@ import ecash.exception.InvalidPidException;
 
 public class Shop {
 	
-	protected final int shopid;
+	protected final int shopId;
 	private int transactionCounter = 0;
 	
 	protected Bank bank;
 	
 	public Shop(int id, Bank bank){
-		this.shopid = id*10;
+		this.shopId = id;
 		this.bank = bank;
+        bank.registerShop(id);
 	}
 	
-	public int getShopId(){
-		return shopid;
-	}
-	
-	public int getPid(){
+	public int getNextPid(){
 		transactionCounter++;
-		return shopid+transactionCounter;
+		return Util.encodePid(shopId, transactionCounter);
 	}
 	
 	public void buy(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException{
@@ -39,12 +36,11 @@ public class Shop {
 			throw new InvalidCoinException();
 		}
 		
-		bank.deposit(c,sigmaB,sigma,pid, shopid);
+		bank.deposit(c, sigmaB, sigma, pid);
 	}
 	
 	private boolean isValidPid(int pid){
-		int id = pid - shopid;
-		return !(0 > id || id > 100000);
+		return shopId == Util.decodePid(pid);
 	}
 	
 }

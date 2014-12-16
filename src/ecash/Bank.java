@@ -19,6 +19,8 @@ public class Bank {
 	
 	private Map<OTvk,Transaction> usedCoins = new HashMap<OTvk,Transaction>();
 	private ArrayList<Integer> usedPids	= new ArrayList<Integer>();
+
+    private ArrayList<Integer> shops = new ArrayList<Integer>();
 	
 	public Bank(){
 		G = Group.getRandomGroupElement();
@@ -42,7 +44,13 @@ public class Bank {
 
 		return hu;
 	}
-	
+
+    /*
+     * Shop Registration
+     */
+	public void registerShop(int shopId) {
+        shops.add(shopId);
+    }
 
 	/*
 	 * Withdraw methods
@@ -72,9 +80,8 @@ public class Bank {
 	/*
 	 * Deposit
 	 */
-	
-	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid, int shopID) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException {
-		checkShopId(pid, shopID);
+	public void deposit(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, DoubleDepositException, InvalidPidException, DoubleSpendingException{
+		checkShopId(pid);
 		
 		if(!Util.BKVer(G, H, c, sigmaB) && !Util.OTVer(c, pid, sigma)) throw new InvalidCoinException();
 		
@@ -94,11 +101,10 @@ public class Bank {
 		usedPids.add(pid);
 	}
 	
-	private void checkShopId(int pid, int shopID) throws DoubleDepositException, InvalidPidException{
+	private void checkShopId(int pid) throws DoubleDepositException, InvalidPidException{
 		if(usedPids.contains(pid)) throw new DoubleDepositException();
-		
-		int id = pid - shopID;
-		if(0 > id || id > 100000) throw new InvalidPidException();
+
+		if(!shops.contains(Util.decodePid(pid))) throw new InvalidPidException();
 	}
 	
 	/*
