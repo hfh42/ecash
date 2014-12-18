@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
@@ -47,15 +48,23 @@ public class GUIInterface {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Add a content pane with a title in the top part
-        JPanel contentPane = new JPanel(new BorderLayout());
+        JPanel contentPane = new JPanel(new GridBagLayout());
+        GridBagConstraints content = new GridBagConstraints();
+        content.gridwidth = 3;
         JLabel label = new JLabel("eCash System");
         label.setBorder(new EmptyBorder(5, 5, 5, 5));
         label.setHorizontalAlignment(JLabel.CENTER);
-        contentPane.add(label, BorderLayout.PAGE_START);
+        contentPane.add(label, content);
+        content.fill = GridBagConstraints.HORIZONTAL;
+        content.gridx = 0;
+        contentPane.add(new JSeparator(SwingConstants.HORIZONTAL), content);
+        content.fill = GridBagConstraints.NONE;
 
         // Add a user panel to store users and buttons for user actions
         userPanel = new JPanel(new GridBagLayout());
-        contentPane.add(userPanel, BorderLayout.LINE_START);
+        content.gridwidth = 1;
+        content.gridx = 0;
+        contentPane.add(userPanel, content);
 
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
@@ -71,9 +80,15 @@ public class GUIInterface {
             addUser(user);
         }
 
+        content.gridx = 1;
+        content.fill = GridBagConstraints.VERTICAL;
+        contentPane.add(new JSeparator(SwingConstants.VERTICAL), content);
+        content.fill = GridBagConstraints.NONE;
+
         // Add a shop panel to store shops and buttons for shop actions
         shopPanel = new JPanel(new GridBagLayout());
-        contentPane.add(shopPanel, BorderLayout.LINE_END);
+        content.gridx = 2;
+        contentPane.add(shopPanel, content);
 
         JButton shopCreate = new JButton("Create Shop");
         shopCreate.addActionListener(new CreateShopAction());
@@ -94,13 +109,16 @@ public class GUIInterface {
         addStatusMessage("Use the buttons in the interface to navigate the system.");
         messages.setAutoscrolls(true);
         JScrollPane scroll = new JScrollPane(messages, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        contentPane.add(scroll, BorderLayout.CENTER);
+        content.gridx = 0;
+        content.gridwidth = 3;
+        contentPane.add(scroll, content);
 
         // Add the bank label in the bottom of the window
         bankLabel = new JLabel(bank.getDisplayName() + " (users: " + bank.getRegisteredUsers() + ", shops: " + bank.getShops() + ", deposits: " + bank.getDeposits() + ")");
         bankLabel.setHorizontalAlignment(JLabel.CENTER);
         bankLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.add(bankLabel, BorderLayout.PAGE_END);
+        content.gridx = 0;
+        contentPane.add(bankLabel, content);
 
         window.getContentPane().add(contentPane);
         window.pack();
@@ -116,6 +134,7 @@ public class GUIInterface {
     private HashMap<InterfaceUser,JLabel> userLabels = new HashMap<InterfaceUser,JLabel>();
 
     // Add a user to the user panel
+    private double userButtonHeight = 0;
     private void addUser(InterfaceUser user) {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(5, 5, 5, 5);
@@ -127,6 +146,7 @@ public class GUIInterface {
 
         JLabel userLabel = new JLabel(user.getDisplayName() + " (coins: " + user.getCurrentCoins() + ")");
         userLabels.put(user, userLabel);
+        c.fill = GridBagConstraints.VERTICAL;
         userPanel.add(userLabel, c);
 
         JButton userWithdraw = new JButton("Withdraw");
@@ -149,6 +169,8 @@ public class GUIInterface {
             c.gridx = 3;
             userPanel.add(userCheat, c);
         }
+
+        userButtonHeight = userWithdraw.getPreferredSize().getHeight();
     }
 
     // Update a user label
@@ -173,10 +195,12 @@ public class GUIInterface {
         c.gridx = 0;
 
         JLabel shopLabel = new JLabel(shop.getDisplayName() + " (sales: " + shop.getSales() + ")");
+        c.fill = GridBagConstraints.VERTICAL;
         shopLabels.put(shop, shopLabel);
 
         if(!(shop instanceof InterfaceCheatingShop)) {
             c.gridwidth = 2;
+            c.ipady = (int)((userButtonHeight - shopLabel.getPreferredSize().getHeight())/2 + 5);
             shopPanel.add(shopLabel, c);
         } else {
             JButton depositCheat = new JButton("Cheat Deposit");
@@ -328,7 +352,7 @@ public class GUIInterface {
             try {
                 shop.depositCoinAgain();
             } catch(InvalidCoinException | InvalidPidException | DoubleSpendingException ex) {
-                addStatusMessage("Unexpected exception in deposit...");
+                addStatusMessage("Unexpected exception in deposit of type " + ex.getClass().getName());
             } catch(NoCoinException ex) {
                 addStatusMessage(shop.getDisplayName() + " tried to redeposit but have no coins yet.");
             } catch(DoubleDepositException ex) {

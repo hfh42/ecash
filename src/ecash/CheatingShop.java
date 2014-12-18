@@ -21,12 +21,12 @@ public class CheatingShop extends Shop {
     }
 
     public void buy(OTvk c, BKSig sigmaB, Pair sigma, int pid) throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException {
+        super.buy(c, sigmaB, sigma, pid);
+
         coinList.add(c);
         sigmaBList.add(sigmaB);
         sigmaList.add(sigma);
         pidList.add(pid);
-
-        super.buy(c, sigmaB, sigma, pid);
     }
 
     public void depositCoinAgain() throws InvalidCoinException, InvalidPidException, DoubleDepositException, DoubleSpendingException, NoCoinException {
