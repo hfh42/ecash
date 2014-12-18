@@ -91,7 +91,7 @@ public class User {
 	
 	public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
 		if(coins.size() == 0) throw new NoCoinException();
-		int pid = shop.getPid();
+		int pid = shop.getNextPid();
 		Coin c = coins.removeFirst();
 		Pair sigma = Util.OTSign(c.sk, pid);
 		shop.buy(c.vk, c.sigmaB, sigma, pid);

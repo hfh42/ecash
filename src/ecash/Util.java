@@ -80,4 +80,13 @@ public class Util {
 		return left == right;
 	}
 
+    private static int shopIdMultiplier = 100000;
+    public static int encodePid(int shopId, int transactionId) {
+        return shopId*shopIdMultiplier+transactionId;
+    }
+
+    public static int decodePid(int pid) {
+        return pid/shopIdMultiplier;
+    }
+
 }
