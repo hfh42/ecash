@@ -62,7 +62,7 @@ public class Bank {
 	public int withdrawResponse(int gu, int e){
 		if(!isRegisteredUser(gu)) throw new IllegalArgumentException("Not a registered user");
 		
-		int v = withdrawSession.remove(gu);		
+		int v = withdrawSession.remove(gu);
 		int z = Group.expAdd(Group.expMult(e, w), v);
 		assert Group.isCorrectExp(z): "z " + z;
 		
@@ -87,7 +87,7 @@ public class Bank {
             if(users.contains(gu))
 			    throw new DoubleSpendingException(gu,U);
             else
-                throw new ErrorCalculation();
+                throw new CalculationException();
 		}
 		
 		usedCoins.put(c,new Transaction(sigma,pid));
