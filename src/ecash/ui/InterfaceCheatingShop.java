@@ -3,9 +3,6 @@ package ecash.ui;
 import ecash.CheatingShop;
 import ecash.exception.*;
 
-/**
- * Created by Silwing on 11-12-2014.
- */
 public class InterfaceCheatingShop extends InterfaceShop {
     private CheatingShop shop;
 

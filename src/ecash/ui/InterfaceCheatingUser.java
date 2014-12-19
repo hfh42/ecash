@@ -4,9 +4,6 @@ import ecash.CheatingUser;
 import ecash.User;
 import ecash.exception.*;
 
-/**
- * Created by Silwing on 11-12-2014.
- */
 public class InterfaceCheatingUser extends InterfaceUser {
     private CheatingUser user;
 

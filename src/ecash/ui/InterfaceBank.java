@@ -2,9 +2,6 @@ package ecash.ui;
 
 import ecash.Bank;
 
-/**
- * Created by Randi on 07-12-2014.
- */
 public class InterfaceBank {
     private Bank bank;
     private String displayName;

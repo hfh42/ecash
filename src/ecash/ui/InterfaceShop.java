@@ -2,9 +2,6 @@ package ecash.ui;
 
 import ecash.Shop;
 
-/**
- * Created by Randi on 07-12-2014.
- */
 public class InterfaceShop {
     private Shop shop;
     private String displayName;
