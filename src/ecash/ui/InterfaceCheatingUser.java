@@ -1,7 +1,6 @@
 package ecash.ui;
 
 import ecash.CheatingUser;
-import ecash.User;
 import ecash.exception.*;
 
 public class InterfaceCheatingUser extends InterfaceUser {
