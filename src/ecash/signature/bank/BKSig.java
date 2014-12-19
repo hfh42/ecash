@@ -1,7 +1,9 @@
 package ecash.signature.bank;
 import java.util.ArrayList;
 
-
+/**
+ * Data class that represents the Banks Signature on a Coin
+ */
 public class BKSig {
 	public final int G,H,gu,hu,Hbar,hbar,z;
 

@@ -1,5 +1,8 @@
 package ecash.signature.ot;
 
+/**
+ * Data class that represents a Signing Key of the One-Time Signature Scheme
+ */
 public class OTsk {
 	public final int w1,w2,v1,v2;
 	

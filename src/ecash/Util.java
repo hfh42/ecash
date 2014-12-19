@@ -15,6 +15,12 @@ import ecash.signature.ot.OTvk;
 public class Util {
 
 		
+	/**
+	 * Hash Function 
+	 * Takes a list of size 7, encodes it as a ByteArray, and uses SHA-256 to hash it
+	 * @param list: A list of size 7
+	 * @return A "random" in the group 
+	 */
 	public static int hash(ArrayList<Integer> list){
 		if(list.size() != 7) throw new IllegalArgumentException("The input list must be of length 7 to be hashed.");
 
@@ -35,10 +41,13 @@ public class Util {
 	}
 		
 	
-	/*
-	 * ecash.Bank Signature
+	/**
+	 * The Banks Verification Algorithm
+	 * @param G, H: The Banks verification key
+	 * @param c: The Coin
+	 * @param sigmaB: The signature
+	 * @return Whether sigmaB is a valid signature on c
 	 */
-	
 	public static boolean BKVer(int G, int H, OTvk c, BKSig sigmaB){
 		ArrayList<Integer> list = sigmaB.getList();
 		list.add(c.a);
@@ -48,23 +57,17 @@ public class Util {
 		int HbarHe = Group.mult(sigmaB.Hbar,Group.pow(H,e));
 		int gz = Group.pow(sigmaB.gu,sigmaB.z);
 		int hbarhe = Group.mult(sigmaB.hbar,Group.pow(sigmaB.hu,e));
-		
-		/*System.out.println("G " + G);		
-		System.out.println("H " + H);		
-		System.out.println("hash/e " + e);		
-		System.out.println("gu " + sigmaB.gu);		
-		System.out.println("hu " + sigmaB.hu);		
-		System.out.println("Hbar " + sigmaB.Hbar);		
-		System.out.println("hbar " + sigmaB.hbar);		
-		System.out.println("z " + sigmaB.z);*/
-		
+				
 		return Gz == HbarHe && gz == hbarhe;
 	}
 	
-	/*
-	 * One-Time Signature
+
+	/**
+	 * One-Time Signing Algorithm
+	 * @param sk: Signing key
+	 * @param m: Message to sign
+	 * @return the signature
 	 */
-	
 	public static Pair OTSign(OTsk sk, int m){
 		int z1 = Group.expAdd(Group.expMult(m,sk.w1), sk.v1);
 		assert Group.isCorrectExp(z1): "z1: " + z1;
@@ -74,6 +77,13 @@ public class Util {
 		return new Pair(z1,z2);
 	}
 	
+	/**
+	 * One-Time Verification Algorithm
+	 * @param c: Verification key
+	 * @param m: Message 
+	 * @param z: Signature
+	 * @return whether z is a valid signature on m
+	 */
 	public static boolean OTVer(OTvk c, int m, Pair z){
 		int left = Group.mult(Group.pow(Group.g1,z.x1),Group.pow(Group.g2,z.x2));
 		int right = Group.mult(c.a, Group.pow(c.x,m));
@@ -81,10 +91,22 @@ public class Util {
 	}
 
     private static int shopIdMultiplier = 100000;
+    
+    /**
+     * Payment identifier encoding algorithm
+     * @param shopId
+     * @param transactionId
+     * @return Payment identifier
+     */
     public static int encodePid(int shopId, int transactionId) {
         return shopId*shopIdMultiplier+transactionId;
     }
 
+    /**
+     * Payment identifier decoding algorithm
+     * @param pid
+     * @return The Shop ID
+     */
     public static int decodePid(int pid) {
         return pid/shopIdMultiplier;
     }

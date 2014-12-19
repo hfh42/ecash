@@ -2,12 +2,6 @@ package ecash;
 
 import java.util.ArrayList;
 import javax.swing.*;
-
-import ecash.exception.DoubleDepositException;
-import ecash.exception.DoubleSpendingException;
-import ecash.exception.InvalidCoinException;
-import ecash.exception.InvalidPidException;
-import ecash.exception.NoCoinException;
 import ecash.ui.*;
 
 public class Main {
@@ -29,79 +23,11 @@ public class Main {
         shops.add(new InterfaceShop("Shop 1", s1));
         shops.add(new InterfaceCheatingShop("Cheat Shop 1", s3));
 
-        /*
-		// Withdraw coins for different users
-		u1.withdraw().withdraw().withdraw();
-        cu1.withdraw();
-		// Spend the coins we just withdrawn
-		trySpendCoin(u1, s3, "Spent coin for u2 in s3");
-		trySpendCoin(u1, s3, "Spent coin for u2 in s3");
-		trySpendCoin(u1, s3, "Spent coin for u2 in s1");
-
-        trySpendCoin(cu1, s1, "Spent coin for cu1 in s2");
-
-		// Try to spend a coin without withdrawing first
-		trySpendCoin(u1, s1, "Spent coin for u2 in s1");
-        //Try to spend a coin twice
-        trySpendCoinTwice(cu1,s3,"spend spend coin for cu1 in s2");
-        //Try to deposit a coin twice
-        tryDepositCoinTwice(s3);
-*/
+        // Create UI
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new GUIInterface(new InterfaceBank("The Bank", b), users, shops);
             }
         });
 	}
-
-	private static void trySpendCoin(User u, Shop s, String m) {
-		try {
-			u.spendCoin(s);
-			System.out.println(m);
-		} catch(InvalidCoinException e) {
-			System.out.println("Tried to spend an invalid coin");
-		} catch(InvalidPidException e) {
-			System.out.println("Contacted shop with an invalid transaction ID");
-		} catch(NoCoinException e) {
-			System.out.println("Tried to spend a coin with no coins withdrawn");
-		} catch(DoubleDepositException e) {
-			System.out.println("Tried to deposit the same transaction twice");
-		} catch(DoubleSpendingException e) {
-			System.out.println("User with public id " +e.gu  + "and private id" + e.U +" tried to spend the same coin twice");
-		}
-	}
-
-    private static void trySpendCoinTwice(CheatingUser u, Shop s, String m) {
-        try {
-            u.spendUsedCoin(s);
-            System.out.println(m);
-        } catch(InvalidCoinException e) {
-            System.out.println("Tried to spend an invalid coin");
-        } catch(InvalidPidException e) {
-            System.out.println("Contacted shop with an invalid transaction ID");
-        } catch(NoCoinException e) {
-            System.out.println("Tried to spend a coin with no coins withdrawn");
-        } catch(DoubleDepositException e) {
-            System.out.println("Tried to deposit the same transaction twice");
-        } catch(DoubleSpendingException e) {
-            System.out.println("User with public id " +e.gu + "and private id" + e.U +" tried to spend the same coin twice");
-        }
-    }
-
-    private static void tryDepositCoinTwice(CheatingShop s){
-        try {
-            s.depositCoinAgain();
-        } catch (InvalidCoinException e) {
-            System.out.println("Tried to deposit an invalid coin");
-        } catch (InvalidPidException e) {
-            System.out.println("Invalid pid of shop");
-        } catch (DoubleDepositException e) {
-            System.out.println("Tried to deposit a coin twice");
-        } catch (DoubleSpendingException e) {
-            System.out.println("Tried to spend an coin twice");
-        } catch (NoCoinException e) {
-            System.out.println("No coin to dobble spend");
-        }
-    }
-
 }

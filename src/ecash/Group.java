@@ -21,13 +21,6 @@ public class Group {
 		int res = mult(pow(g1,exp),g2);
 		assert isInGroup(res);
 		return res; 
-		
-		/* ** Other way to calculate random element **
-		 * int res = rnd.nextInt(Parameters.p-1)+1;
-		 * while(!isInGroup(res, elms)){
-		 * 		res = rnd.nextInt(Parameters.p-1)+1;
-		 * }
-		*/
 	}
 
 	/**
@@ -38,7 +31,8 @@ public class Group {
 	}
 
 	/**
-	 * Checks that g is in the group: g^q mod p = 1
+	 * Checks that element is in the group: g^q mod p = 1
+	 * @param g: possible group element
 	 */
 	public static boolean isInGroup(int g){
 		return power(g, q,p) == 1;
@@ -46,6 +40,7 @@ public class Group {
 
 	/**
 	 * Check that the exponent is correct: 0 <= exp < q
+	 * @param exp: possible exponent
 	 */
 	public static boolean isCorrectExp(int exp){
 		return exp < q && exp >= 0;
@@ -83,15 +78,26 @@ public class Group {
 		return mod(x,mod);
 	}
 
-    public static int expInverse(int base){
-        assert isCorrectExp(base): "ecash.Exponent.inverse, base is not in the exponent";
-        int result = inverse(base,q);
-        assert isCorrectExp(result): "eachs.expInverse inverse result is not in exponent, result "+ result+" base " + base;
-        assert expMult(base, result) == 1: "ecash.Exponent.inverse, result is not the inverse";
+	/**
+	 * Invert a exponent
+	 * @param elm: The element to invert
+	 * @return the inverse
+	 */
+    public static int expInverse(int elm){
+        assert isCorrectExp(elm): "ecash.Exponent.inverse, base is not in the exponent";
+        int result = inverse(elm,q);
+        assert isCorrectExp(result): "eachs.expInverse inverse result is not in exponent, result "+ result+" base " + elm;
+        assert expMult(elm, result) == 1: "ecash.Exponent.inverse, result is not the inverse";
         assert isCorrectExp(result): "ecash.Exponent.inverse gives element outside the exponent";
 
         return result;
     }
+    
+    /**
+     * Invert a group element
+     * @param base: The element to invert
+     * @return the inverse
+     */
     public static int inverse(int base){
         assert isInGroup(base): "ecash.Group.inverse, base is not in the group";
         int result = inverse(base,p);
@@ -106,6 +112,12 @@ public class Group {
 	}
 
 		
+	/**
+	 * Group multiplication
+	 * @param x
+	 * @param y
+	 * @return x*y mod p
+	 */
 	public static int mult(int x, int y){
 		assert isInGroup(x): "ecash.Group.mult, x is not in the group";
 		assert isInGroup(y): "ecash.Group.mult, y is not in the group";
@@ -114,6 +126,12 @@ public class Group {
 		return res;
 	}
 	
+	/**
+	 * Exponent multiplication
+	 * @param x
+	 * @param y
+	 * @return x*y mod q
+	 */
 	public static int expMult(int x, int y){
 		assert isCorrectExp(x): "ecash.Group.expMult, x is not a corrct exponent";
 		assert isCorrectExp(y): "ecash.Group.expMult, y is not a corrct exponent";
@@ -127,6 +145,12 @@ public class Group {
 		return (mod((a*b),m));		
 	}
 
+	/**
+	 * Exponent division
+	 * @param x
+	 * @param y
+	 * @return x/y mod q
+	 */
     public static int expDiv(int x,int y){
         assert isCorrectExp(x): "ecash.Group.expDiv, x is not a corrct exponent";
         assert isCorrectExp(y): "ecash.Group.expDiv, y is not a corrct exponent";
@@ -136,6 +160,12 @@ public class Group {
         return xInvY;
     }
 
+    /**
+     * Exponent addition
+     * @param x
+     * @param y
+     * @return x+y mod q
+     */
 	public static int expAdd(int x, int y){
 		assert isCorrectExp(x): "ecash.Group.expAdd, x is not a corrct exponent";
 		assert isCorrectExp(y) || isCorrectExp(-y): "ecash.Group.expAdd, y is not a corrct exponent";

@@ -1,5 +1,8 @@
 package ecash.signature.ot;
 
+/**
+ * Data class that represents a Verification Key of the One-Time Signature Scheme
+ */
 public class OTvk {
 	public final int x, a;
 	

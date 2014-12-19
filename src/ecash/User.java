@@ -16,12 +16,17 @@ import ecash.exception.NoCoinException;
 public class User {
 	private Bank bank;
 	
-	private int gu,hu;
-	private int U;
+	private int gu,hu; // The Users public ID
+	private int U; // The Users secret ID
 	
 	protected LinkedList<Coin> coins = new LinkedList<Coin>();
-	
-	
+		
+	/**
+	 * Constructor 
+	 * Create a new User, and register it at the Bank
+	 * @param U: The secret ID of the User
+	 * @param bank: The Users Bank
+	 */
 	public User(int U, Bank bank){
 		this.bank = bank;
 		this.U = U;
@@ -32,7 +37,11 @@ public class User {
 		hu = bank.register(gu);
 	}
 	
-	// called by test class
+	/**
+	 * Withdraw protocol
+	 * The User contacts the Bank to withdraw a Coin
+	 * @return This User
+	 */
 	public User withdraw(){
 		int s = Group.getRandomExponent();
 		int v1 = Group.getRandomExponent();
@@ -40,7 +49,7 @@ public class User {
 		int zp = Group.getRandomExponent();
 		int ep = Group.getRandomExponent();
 
-		// Create coin and save it
+		// Create new coin
 		int x = Group.pow(gu, s);
 		int a = Group.mult(Group.pow(Group.g1, v1), Group.pow(Group.g2,v2));
 		OTvk vk = new OTvk(x,a);
@@ -71,24 +80,28 @@ public class User {
 		list.add(a);
 		
 		int hash = Util.hash(list);
-		assert hash >= 0;
 		int e = Group.expAdd(hash,-ep);
-		assert Group.isCorrectExp(e);
 		
 		// Get response from ecash.Bank by sending the challenge
 		int z = bank.withdrawResponse(gu,e);
-		int sumz = Group.expAdd(z, zp);
-		assert Group.isCorrectExp(sumz);
+		int sumz = Group.expAdd(z, zp);;
 		
 		// Compute ecash.signature
 		BKSig sigmaB = new BKSig(bank.getG(), bank.getH(), gus, hus, HbarHbarp, hbarshbarp, sumz);
 		
+		// Save the Coin
 		Coin c = new Coin(vk,sk,sigmaB);
 		coins.add(c);
 		
 		return this;
 	}
 	
+	/**
+	 * Spending protocol
+	 * The User contacts the given Shop to spend a Coin
+	 * @param shop: The Shop in which the User should use a Coin
+	 * @return This User
+	 */
 	public User spendCoin(Shop shop) throws InvalidCoinException, InvalidPidException, NoCoinException, DoubleDepositException, DoubleSpendingException {
 		if(coins.size() == 0) throw new NoCoinException();
 		int pid = shop.getNextPid();
@@ -99,7 +112,9 @@ public class User {
 		return this;
 	}	
 	
-	
+	/*
+	 * Data class used to save a coin
+	 */
 	protected class Coin{
 		public final OTvk vk;
 		public final OTsk sk;
